@@ -1,0 +1,854 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Primeros pasos con Arduino</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: cuaderno de taller — una columna de lectura con fichas de componentes y diagramas tipo esquemático */
+:root {
+  --bg: #f3f6f5;
+  --surface: #ffffff;
+  --surface-2: #e7eeec;
+  --fg: #16201f;
+  --muted: #55625f;
+  --line: #cfdad7;
+  --accent: #00747c;      /* verde azulado de placa */
+  --accent-soft: #d3ebea;
+  --copper: #b86a2c;      /* cobre de las pistas */
+  --copper-soft: #f6e3d3;
+  --warn: #b3261e;
+  --warn-soft: #fbe3e1;
+  --ok: #2f7d3a;
+  --code-bg: #0f2324;
+  --code-fg: #d9efec;
+  --code-key: #7fd6cf;
+  --code-num: #f0b77d;
+  --code-com: #7f9c99;
+  --hole: #b9c6c3;
+  --board: #e9efed;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1615; --surface: #152120; --surface-2: #1c2b2a; --fg: #e3edeb; --muted: #9db0ac;
+    --line: #2c3e3c; --accent: #4cc3bb; --accent-soft: #143534; --copper: #e3995c; --copper-soft: #3a2616;
+    --warn: #f08a80; --warn-soft: #3b1a17; --ok: #7cc987;
+    --code-bg: #091212; --hole: #3d504d; --board: #1a2827;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1615; --surface: #152120; --surface-2: #1c2b2a; --fg: #e3edeb; --muted: #9db0ac;
+  --line: #2c3e3c; --accent: #4cc3bb; --accent-soft: #143534; --copper: #e3995c; --copper-soft: #3a2616;
+  --warn: #f08a80; --warn-soft: #3b1a17; --ok: #7cc987;
+  --code-bg: #091212; --hole: #3d504d; --board: #1a2827;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--f-body); font-size: 17px; line-height: 1.6;
+}
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 20px; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: 1.15rem; font-weight: 700; }
+p { margin: 0; }
+.prose { max-width: 66ch; display: grid; gap: 14px; }
+a { color: var(--accent); }
+code { font-family: var(--f-mono); font-size: 0.88em; background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
+:focus-visible { outline: 3px solid var(--copper); outline-offset: 2px; }
+
+/* ---------- Header ---------- */
+header.hero { padding-block: 48px 36px; border-bottom: 1px solid var(--line); }
+.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: center; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--copper); font-weight: 600; }
+.hero h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 800; letter-spacing: -0.02em; margin-top: 10px; }
+.hero h1 span { color: var(--accent); }
+.hero p.lead { margin-top: 16px; font-size: 1.1rem; color: var(--muted); max-width: 52ch; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.chip { font-family: var(--f-mono); font-size: 0.78rem; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); }
+.hero svg { width: 100%; height: auto; max-width: 100%; }
+
+/* ---------- Nav ---------- */
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+nav.toc ol { list-style: none; margin: 0 auto; padding: 10px 20px; display: flex; gap: 6px; overflow-x: auto; max-width: 980px; scrollbar-width: thin; }
+nav.toc a { display: block; white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 0.9rem; padding: 6px 12px; border-radius: 6px; }
+nav.toc a:hover { background: var(--surface-2); color: var(--fg); }
+nav.toc .n { font-family: var(--f-mono); color: var(--copper); margin-right: 6px; font-size: 0.8rem; }
+
+/* ---------- Sections ---------- */
+main { display: grid; gap: 0; }
+section.block { padding-block: 56px; border-bottom: 1px solid var(--line); scroll-margin-top: 60px; }
+.sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px; }
+.sec-num { font-family: var(--f-mono); font-size: 0.85rem; color: var(--copper); font-weight: 600; border: 1.5px solid var(--copper); border-radius: 6px; padding: 2px 8px; flex-shrink: 0; }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; margin-top: 24px; }
+.two > * { min-width: 0; }
+
+.figure { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; }
+.figure svg { display: block; width: 100%; height: auto; min-width: 320px; }
+.figcap { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+
+/* ---------- Component cards ---------- */
+.kit { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; margin-top: 26px; }
+.part { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; grid-template-rows: auto auto 1fr; gap: 10px; min-width: 0; }
+.part-top { display: flex; gap: 14px; align-items: center; }
+.part-icon { width: 54px; height: 54px; flex-shrink: 0; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; }
+.part-icon svg { width: 40px; height: 40px; }
+.part h3 { font-size: 1.05rem; }
+.part .what { font-size: 0.82rem; color: var(--muted); font-family: var(--f-mono); }
+.part p { font-size: 0.95rem; }
+.specs { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; font-size: 0.88rem; border-top: 1px dashed var(--line); padding-top: 10px; align-self: end; }
+.specs li { display: flex; justify-content: space-between; gap: 10px; }
+.specs b { font-weight: 400; color: var(--muted); }
+.specs span { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- Tables ---------- */
+.table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; min-width: 480px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--f-display); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); background: var(--surface-2); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--f-mono); font-size: 0.88rem; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; border: 1px solid rgba(0,0,0,.25); }
+
+/* ---------- Callouts ---------- */
+.note { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 8px 8px 0; font-size: 0.95rem; }
+.note.warn { border-color: var(--warn); background: var(--warn-soft); }
+.note.tip { border-color: var(--copper); background: var(--copper-soft); }
+.note strong:first-child { font-family: var(--f-display); }
+
+/* ---------- Calculators ---------- */
+.tool { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 16px; }
+.tool h3 { display: flex; align-items: center; gap: 8px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+label.f { display: grid; gap: 4px; font-size: 0.82rem; color: var(--muted); }
+select, input[type="number"] {
+  font: inherit; font-size: 0.95rem; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%;
+}
+.result { font-family: var(--f-mono); font-size: 1.5rem; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.result small { display: block; font-family: var(--f-body); font-size: 0.85rem; font-weight: 400; color: var(--muted); margin-top: 4px; }
+.res-svg { width: 100%; max-width: 360px; height: auto; }
+
+/* ---------- Steps ---------- */
+.steps { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 14px; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; }
+.steps li::before { counter-increment: s; content: counter(s); font-family: var(--f-display); font-weight: 800; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: var(--bg); display: grid; place-items: center; }
+.steps li > div { min-width: 0; padding-top: 4px; }
+
+/* ---------- Code ---------- */
+.code { position: relative; background: var(--code-bg); color: var(--code-fg); border-radius: 10px; overflow: hidden; }
+.code-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,.08); font-family: var(--f-mono); font-size: 0.78rem; color: var(--code-com); }
+.copy { font: inherit; font-size: 0.78rem; background: transparent; color: var(--code-key); border: 1px solid rgba(127,214,207,.4); border-radius: 5px; padding: 3px 10px; cursor: pointer; }
+.copy:hover { background: rgba(127,214,207,.12); }
+.code pre { margin: 0; padding: 16px; overflow-x: auto; font-family: var(--f-mono); font-size: 0.9rem; line-height: 1.65; }
+.code .k { color: var(--code-key); }
+.code .n { color: var(--code-num); }
+.code .c { color: var(--code-com); font-style: italic; }
+
+/* ---------- Checklist / errors ---------- */
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 6px; }
+.rule .tag { font-family: var(--f-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.rule.bad .tag { color: var(--warn); }
+.rule.good .tag { color: var(--ok); }
+.rule p { font-size: 0.93rem; }
+
+.challenges { display: grid; gap: 10px; margin-top: 18px; }
+.ch { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: baseline; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.lvl { font-family: var(--f-mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: var(--copper-soft); color: var(--copper); font-weight: 600; white-space: nowrap; }
+
+dl.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 10px 22px; margin: 22px 0 0; }
+dl.gloss dt { font-family: var(--f-mono); font-weight: 600; color: var(--accent); font-size: 0.92rem; }
+dl.gloss dd { margin: 0; font-size: 0.95rem; }
+
+footer { padding-block: 36px 48px; color: var(--muted); font-size: 0.88rem; }
+
+/* svg tokens */
+.s-line { stroke: var(--fg); }
+.s-muted { fill: var(--muted); }
+.s-fg { fill: var(--fg); }
+.s-accent { fill: var(--accent); }
+.s-copper { fill: var(--copper); }
+.s-board { fill: var(--board); }
+.s-hole { fill: var(--hole); }
+svg text { font-family: var(--f-mono); }
+
+@media (max-width: 760px) {
+  .hero-grid, .two { grid-template-columns: 1fr; }
+  body { font-size: 16px; }
+  dl.gloss { grid-template-columns: 1fr; gap: 2px; }
+  dl.gloss dd { margin-bottom: 12px; }
+  section.block { padding-block: 44px; }
+}
+</style>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Guía de laboratorio · Nivel 0</div>
+      <h1>Tu primer contacto con <span>Arduino</span></h1>
+      <p class="lead">Conoce la placa, los componentes básicos del kit y cómo conectarlos sin dañar nada. Al final armarás tu primer circuito: un LED que parpadea.</p>
+      <div class="hero-meta">
+        <span class="chip">Arduino UNO R3</span>
+        <span class="chip">Protoboard</span>
+        <span class="chip">LED + resistencia</span>
+        <span class="chip">Proyecto: Blink</span>
+      </div>
+    </div>
+    <svg viewBox="0 0 320 220" role="img" aria-label="Ilustración de un LED encendido conectado a una resistencia">
+      <rect x="10" y="150" width="300" height="56" rx="6" class="s-board" stroke="var(--line)"/>
+      <g class="s-hole">
+        <circle cx="40" cy="168" r="3"/><circle cx="60" cy="168" r="3"/><circle cx="80" cy="168" r="3"/><circle cx="100" cy="168" r="3"/><circle cx="120" cy="168" r="3"/><circle cx="140" cy="168" r="3"/><circle cx="160" cy="168" r="3"/><circle cx="180" cy="168" r="3"/><circle cx="200" cy="168" r="3"/><circle cx="220" cy="168" r="3"/><circle cx="240" cy="168" r="3"/><circle cx="260" cy="168" r="3"/><circle cx="280" cy="168" r="3"/>
+        <circle cx="40" cy="188" r="3"/><circle cx="60" cy="188" r="3"/><circle cx="80" cy="188" r="3"/><circle cx="100" cy="188" r="3"/><circle cx="120" cy="188" r="3"/><circle cx="140" cy="188" r="3"/><circle cx="160" cy="188" r="3"/><circle cx="180" cy="188" r="3"/><circle cx="200" cy="188" r="3"/><circle cx="220" cy="188" r="3"/><circle cx="240" cy="188" r="3"/><circle cx="260" cy="188" r="3"/><circle cx="280" cy="188" r="3"/>
+      </g>
+      <!-- glow -->
+      <circle cx="100" cy="62" r="46" fill="#e5483b" opacity="0.14"/>
+      <circle cx="100" cy="62" r="30" fill="#e5483b" opacity="0.18"/>
+      <!-- LED -->
+      <path d="M84 98 V62 a16 16 0 0 1 32 0 V98 Z" fill="#e5483b" opacity="0.92"/>
+      <rect x="80" y="96" width="40" height="7" rx="2" fill="#c63a2f"/>
+      <line x1="92" y1="103" x2="92" y2="168" stroke="var(--hole)" stroke-width="3"/>
+      <path d="M108 103 V130 H108 V168" stroke="var(--hole)" stroke-width="3" fill="none"/>
+      <text x="74" y="142" font-size="10" class="s-muted">−</text>
+      <text x="114" y="142" font-size="10" class="s-muted">+</text>
+      <!-- resistor -->
+      <line x1="140" y1="168" x2="140" y2="120" stroke="var(--hole)" stroke-width="3"/>
+      <line x1="140" y1="120" x2="160" y2="120" stroke="var(--hole)" stroke-width="3"/>
+      <rect x="160" y="110" width="70" height="20" rx="9" fill="#e2c99a"/>
+      <rect x="172" y="110" width="6" height="20" fill="#d1302a"/>
+      <rect x="184" y="110" width="6" height="20" fill="#d1302a"/>
+      <rect x="196" y="110" width="6" height="20" fill="#7a4a24"/>
+      <rect x="214" y="110" width="5" height="20" fill="#c9a227"/>
+      <line x1="230" y1="120" x2="250" y2="120" stroke="var(--hole)" stroke-width="3"/>
+      <line x1="250" y1="120" x2="250" y2="168" stroke="var(--hole)" stroke-width="3"/>
+      <text x="168" y="100" font-size="11" class="s-muted">220 Ω</text>
+    </svg>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contenido">
+  <ol>
+    <li><a href="#placa"><span class="n">01</span>La placa</a></li>
+    <li><a href="#kit"><span class="n">02</span>El kit básico</a></li>
+    <li><a href="#protoboard"><span class="n">03</span>Protoboard</a></li>
+    <li><a href="#led"><span class="n">04</span>LEDs</a></li>
+    <li><a href="#resistencias"><span class="n">05</span>Resistencias</a></li>
+    <li><a href="#blink"><span class="n">06</span>Proyecto Blink</a></li>
+    <li><a href="#reglas"><span class="n">07</span>Reglas de oro</a></li>
+    <li><a href="#glosario"><span class="n">08</span>Glosario</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- 01 PLACA -->
+<section class="block" id="placa">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><h2>¿Qué es Arduino?</h2></div>
+    <div class="prose">
+      <p>Arduino es una <strong>placa electrónica programable</strong>. Tiene un pequeño cerebro llamado <em>microcontrolador</em> que lee lo que pasa a su alrededor (botones, sensores de luz, temperatura) y controla cosas (LEDs, motores, sonidos) siguiendo las instrucciones que tú le escribes en la computadora.</p>
+      <p>El programa se escribe en el <strong>Arduino IDE</strong>, se llama <em>sketch</em> y se envía a la placa por el cable USB. Una vez cargado, la placa lo ejecuta una y otra vez mientras tenga energía, aunque la desconectes de la computadora y la alimentes con una batería.</p>
+    </div>
+
+    <div class="two">
+      <div class="figure">
+        <svg viewBox="0 0 440 300" role="img" aria-label="Diagrama de la placa Arduino UNO con sus partes principales">
+          <rect x="60" y="40" width="320" height="220" rx="10" fill="var(--accent)" opacity="0.88"/>
+          <!-- usb -->
+          <rect x="40" y="70" width="52" height="44" rx="3" fill="var(--hole)" stroke="var(--fg)" stroke-width="1"/>
+          <!-- jack -->
+          <rect x="40" y="190" width="56" height="38" rx="3" fill="var(--fg)"/>
+          <!-- chip -->
+          <rect x="200" y="150" width="140" height="34" rx="3" fill="var(--fg)"/>
+          <!-- digital header -->
+          <rect x="150" y="48" width="220" height="16" rx="2" fill="var(--fg)"/>
+          <g fill="var(--hole)"><circle cx="160" cy="56" r="3"/><circle cx="175" cy="56" r="3"/><circle cx="190" cy="56" r="3"/><circle cx="205" cy="56" r="3"/><circle cx="220" cy="56" r="3"/><circle cx="235" cy="56" r="3"/><circle cx="250" cy="56" r="3"/><circle cx="265" cy="56" r="3"/><circle cx="280" cy="56" r="3"/><circle cx="295" cy="56" r="3"/><circle cx="310" cy="56" r="3"/><circle cx="325" cy="56" r="3"/><circle cx="340" cy="56" r="3"/><circle cx="355" cy="56" r="3"/></g>
+          <!-- power + analog headers -->
+          <rect x="150" y="236" width="100" height="16" rx="2" fill="var(--fg)"/>
+          <rect x="262" y="236" width="100" height="16" rx="2" fill="var(--fg)"/>
+          <g fill="var(--hole)"><circle cx="162" cy="244" r="3"/><circle cx="177" cy="244" r="3"/><circle cx="192" cy="244" r="3"/><circle cx="207" cy="244" r="3"/><circle cx="222" cy="244" r="3"/><circle cx="237" cy="244" r="3"/><circle cx="274" cy="244" r="3"/><circle cx="291" cy="244" r="3"/><circle cx="308" cy="244" r="3"/><circle cx="325" cy="244" r="3"/><circle cx="342" cy="244" r="3"/><circle cx="356" cy="244" r="3"/></g>
+          <!-- reset + led L -->
+          <rect x="108" y="56" width="18" height="18" rx="3" fill="var(--warn)"/>
+          <circle cx="146" cy="96" r="4" fill="#f2b63b"/>
+          <!-- labels -->
+          <g font-size="11" fill="var(--fg)">
+            <text x="6" y="64">① USB</text>
+            <text x="6" y="244">② Jack</text>
+            <text x="150" y="30">③ Pines digitales 0–13</text>
+            <text x="212" y="146" fill="var(--bg)">④ ATmega328P</text>
+            <text x="148" y="282">⑤ Energía</text>
+            <text x="262" y="282">⑥ Analógicos A0–A5</text>
+            <text x="98" y="38">⑦ Reset</text>
+            <text x="156" y="100" fill="var(--bg)">⑧ LED L</text>
+          </g>
+        </svg>
+        <p class="figcap">Vista simplificada de un Arduino UNO. El LED «L» está conectado internamente al pin 13.</p>
+      </div>
+
+      <div class="table-wrap" style="margin-top:0">
+        <table>
+          <thead><tr><th>Parte</th><th>Para qué sirve</th></tr></thead>
+          <tbody>
+            <tr><td>① Puerto USB</td><td>Carga el programa y alimenta la placa con 5 V.</td></tr>
+            <tr><td>② Jack de alimentación</td><td>Energía externa de 7 a 12 V (eliminador o batería).</td></tr>
+            <tr><td>③ Pines digitales</td><td>Solo dos estados: <code>HIGH</code> (5 V) o <code>LOW</code> (0 V). Los marcados con <code>~</code> (3, 5, 6, 9, 10, 11) dan PWM.</td></tr>
+            <tr><td>④ Microcontrolador</td><td>El «cerebro». Guarda y ejecuta tu sketch.</td></tr>
+            <tr><td>⑤ Pines de energía</td><td><code>5V</code>, <code>3.3V</code> y <code>GND</code> (tierra, el negativo).</td></tr>
+            <tr><td>⑥ Pines analógicos</td><td>Leen voltajes de 0 a 5 V como números de 0 a 1023.</td></tr>
+            <tr><td>⑦ Botón Reset</td><td>Reinicia el programa desde el principio.</td></tr>
+            <tr><td>⑧ LED «L»</td><td>LED de prueba integrado en el pin 13.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Característica del Arduino UNO</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Voltaje de trabajo</td><td class="num">5 V</td></tr>
+          <tr><td>Alimentación recomendada (jack)</td><td class="num">7 – 12 V</td></tr>
+          <tr><td>Pines digitales de entrada/salida</td><td class="num">14 (6 con PWM)</td></tr>
+          <tr><td>Entradas analógicas</td><td class="num">6 (A0 – A5)</td></tr>
+          <tr><td>Corriente recomendada por pin</td><td class="num">20 mA (máximo absoluto 40 mA)</td></tr>
+          <tr><td>Velocidad del reloj</td><td class="num">16 MHz</td></tr>
+          <tr><td>Memoria para programas (Flash)</td><td class="num">32 KB</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 02 KIT -->
+<section class="block" id="kit">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>El kit básico</h2></div>
+    <div class="prose"><p>Estos son los componentes que usarás en las primeras prácticas. Aprende a reconocerlos por su forma, porque en el kit vienen revueltos.</p></div>
+
+    <div class="kit">
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><rect x="4" y="8" width="32" height="24" rx="3" fill="var(--accent)"/><rect x="2" y="12" width="9" height="8" fill="var(--hole)"/><rect x="18" y="20" width="14" height="6" fill="var(--fg)"/></svg></div>
+          <div><h3>Arduino UNO</h3><div class="what">placa programable</div></div>
+        </div>
+        <p>La placa principal. Recibe tu programa y controla los demás componentes.</p>
+        <ul class="specs"><li><b>Voltaje</b><span>5 V</span></li><li><b>Pines</b><span>14 digitales + 6 analógicos</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><rect x="4" y="15" width="12" height="10" rx="1" fill="var(--hole)" stroke="var(--fg)"/><path d="M16 20 C24 20 22 10 36 10" stroke="var(--fg)" stroke-width="3" fill="none"/></svg></div>
+          <div><h3>Cable USB A–B</h3><div class="what">datos + energía</div></div>
+        </div>
+        <p>Conecta la placa a la computadora. Transmite el programa y da energía a todo el circuito.</p>
+        <ul class="specs"><li><b>Entrega</b><span>5 V, hasta 500 mA</span></li><li><b>Tipo</b><span>USB A a USB B</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><rect x="3" y="6" width="34" height="28" rx="2" fill="var(--board)" stroke="var(--line)"/><g fill="var(--hole)"><circle cx="9" cy="13" r="1.5"/><circle cx="15" cy="13" r="1.5"/><circle cx="21" cy="13" r="1.5"/><circle cx="27" cy="13" r="1.5"/><circle cx="33" cy="13" r="1.5"/><circle cx="9" cy="27" r="1.5"/><circle cx="15" cy="27" r="1.5"/><circle cx="21" cy="27" r="1.5"/><circle cx="27" cy="27" r="1.5"/><circle cx="33" cy="27" r="1.5"/></g><line x1="5" y1="20" x2="35" y2="20" stroke="var(--line)" stroke-width="2"/></svg></div>
+          <div><h3>Protoboard</h3><div class="what">placa de pruebas</div></div>
+        </div>
+        <p>Tablero con orificios conectados por dentro. Permite armar circuitos sin soldar y cambiarlos cuantas veces quieras.</p>
+        <ul class="specs"><li><b>Tamaño común</b><span>400 u 830 puntos</span></li><li><b>Separación</b><span>2.54 mm</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><path d="M13 24 V13 a7 7 0 0 1 14 0 V24 Z" fill="#e5483b"/><rect x="11" y="23" width="18" height="3" fill="#c63a2f"/><line x1="16" y1="26" x2="16" y2="38" stroke="var(--hole)" stroke-width="2"/><line x1="24" y1="26" x2="24" y2="34" stroke="var(--hole)" stroke-width="2"/></svg></div>
+          <div><h3>LED</h3><div class="what">diodo emisor de luz</div></div>
+        </div>
+        <p>Emite luz cuando la corriente pasa en el sentido correcto. Tiene polaridad y <strong>siempre</strong> necesita resistencia.</p>
+        <ul class="specs"><li><b>Corriente</b><span>10 – 20 mA</span></li><li><b>Voltaje</b><span>1.8 – 3.4 V según color</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><line x1="2" y1="20" x2="38" y2="20" stroke="var(--hole)" stroke-width="2"/><rect x="9" y="14" width="22" height="12" rx="5" fill="#e2c99a"/><rect x="13" y="14" width="3" height="12" fill="#d1302a"/><rect x="18" y="14" width="3" height="12" fill="#d1302a"/><rect x="23" y="14" width="3" height="12" fill="#7a4a24"/></svg></div>
+          <div><h3>Resistencia</h3><div class="what">limita la corriente</div></div>
+        </div>
+        <p>Frena el paso de la corriente para proteger otros componentes. Su valor se lee con bandas de colores.</p>
+        <ul class="specs"><li><b>Unidad</b><span>ohm (Ω)</span></li><li><b>Para LED</b><span>220 Ω o 330 Ω</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><path d="M6 32 C14 10 26 30 34 8" stroke="var(--copper)" stroke-width="3" fill="none"/><rect x="2" y="30" width="7" height="6" fill="var(--fg)"/><rect x="31" y="4" width="7" height="6" fill="var(--fg)"/></svg></div>
+          <div><h3>Cables jumper</h3><div class="what">dupont</div></div>
+        </div>
+        <p>Llevan la señal de un punto a otro. Usa colores con sentido: rojo para 5 V, negro para GND.</p>
+        <ul class="specs"><li><b>Tipos</b><span>macho-macho, macho-hembra</span></li><li><b>Calibre</b><span>22 AWG</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><rect x="8" y="10" width="24" height="20" rx="2" fill="var(--fg)"/><circle cx="20" cy="20" r="6" fill="var(--hole)"/><line x1="10" y1="30" x2="10" y2="37" stroke="var(--hole)" stroke-width="2"/><line x1="30" y1="30" x2="30" y2="37" stroke="var(--hole)" stroke-width="2"/></svg></div>
+          <div><h3>Push button</h3><div class="what">pulsador</div></div>
+        </div>
+        <p>Botón que cierra el circuito solo mientras lo presionas. Se lee con <code>digitalRead()</code>.</p>
+        <ul class="specs"><li><b>Patas</b><span>4 (unidas en pares)</span></li><li><b>Necesita</b><span>resistencia de 10 kΩ</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><circle cx="20" cy="18" r="11" fill="var(--accent)"/><rect x="18" y="4" width="4" height="12" fill="var(--hole)"/><line x1="12" y1="29" x2="12" y2="37" stroke="var(--hole)" stroke-width="2"/><line x1="20" y1="29" x2="20" y2="37" stroke="var(--hole)" stroke-width="2"/><line x1="28" y1="29" x2="28" y2="37" stroke="var(--hole)" stroke-width="2"/></svg></div>
+          <div><h3>Potenciómetro</h3><div class="what">resistencia variable</div></div>
+        </div>
+        <p>Una perilla que cambia su resistencia al girarla. Ideal para controlar brillo o velocidad.</p>
+        <ul class="specs"><li><b>Patas</b><span>3 (5V · señal · GND)</span></li><li><b>Valor común</b><span>10 kΩ</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><circle cx="20" cy="18" r="12" fill="var(--fg)"/><circle cx="20" cy="18" r="3" fill="var(--hole)"/><line x1="15" y1="30" x2="15" y2="37" stroke="var(--hole)" stroke-width="2"/><line x1="25" y1="30" x2="25" y2="34" stroke="var(--hole)" stroke-width="2"/></svg></div>
+          <div><h3>Buzzer</h3><div class="what">zumbador</div></div>
+        </div>
+        <p>Produce sonido. El <em>activo</em> suena con solo darle 5 V; el <em>pasivo</em> necesita la función <code>tone()</code>.</p>
+        <ul class="specs"><li><b>Voltaje</b><span>3 – 5 V</span></li><li><b>Polaridad</b><span>sí, pata larga a +</span></li></ul>
+      </article>
+
+      <article class="part">
+        <div class="part-top">
+          <div class="part-icon"><svg viewBox="0 0 40 40"><circle cx="20" cy="16" r="10" fill="#e9dcc0"/><path d="M13 12 h4 v4 h6 v4 h4" stroke="#c0392b" stroke-width="1.5" fill="none"/><line x1="16" y1="26" x2="16" y2="37" stroke="var(--hole)" stroke-width="2"/><line x1="24" y1="26" x2="24" y2="37" stroke="var(--hole)" stroke-width="2"/></svg></div>
+          <div><h3>Fotorresistencia</h3><div class="what">LDR · sensor de luz</div></div>
+        </div>
+        <p>Su resistencia baja cuando recibe más luz. Se conecta a un pin analógico para medir la iluminación.</p>
+        <ul class="specs"><li><b>Con luz</b><span>≈ 1 kΩ o menos</span></li><li><b>A oscuras</b><span>cientos de kΩ</span></li></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 03 PROTOBOARD -->
+<section class="block" id="protoboard">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><h2>La protoboard por dentro</h2></div>
+    <div class="prose">
+      <p>Por fuera solo ves agujeros, pero por dentro hay tiras de metal que unen grupos de orificios. Si entiendes qué orificios están conectados, entiendes la protoboard.</p>
+    </div>
+
+    <div class="figure" style="margin-top:22px">
+      <svg viewBox="0 0 640 300" role="img" aria-label="Diagrama de conexiones internas de una protoboard">
+        <rect x="10" y="10" width="620" height="280" rx="8" class="s-board" stroke="var(--line)"/>
+        <!-- top rails -->
+        <rect x="70" y="24" width="520" height="16" rx="8" fill="var(--warn)" opacity="0.16"/>
+        <rect x="70" y="46" width="520" height="16" rx="8" fill="var(--accent)" opacity="0.16"/>
+        <text x="30" y="37" font-size="13" fill="var(--warn)" font-weight="600">+</text>
+        <text x="30" y="59" font-size="13" fill="var(--accent)" font-weight="600">−</text>
+        <!-- bottom rails -->
+        <rect x="70" y="238" width="520" height="16" rx="8" fill="var(--warn)" opacity="0.16"/>
+        <rect x="70" y="260" width="520" height="16" rx="8" fill="var(--accent)" opacity="0.16"/>
+        <text x="30" y="251" font-size="13" fill="var(--warn)" font-weight="600">+</text>
+        <text x="30" y="273" font-size="13" fill="var(--accent)" font-weight="600">−</text>
+        <!-- highlighted column groups -->
+        <rect x="171" y="78" width="18" height="70" rx="9" fill="var(--copper)" opacity="0.28"/>
+        <rect x="171" y="160" width="18" height="70" rx="9" fill="var(--copper)" opacity="0.28"/>
+        <!-- channel -->
+        <rect x="70" y="150" width="520" height="8" fill="var(--line)"/>
+        <g id="holes"></g>
+        <!-- row letters -->
+        <g font-size="10" class="s-muted">
+          <text x="52" y="90">a</text><text x="52" y="104">b</text><text x="52" y="118">c</text><text x="52" y="132">d</text><text x="52" y="146">e</text>
+          <text x="52" y="172">f</text><text x="52" y="186">g</text><text x="52" y="200">h</text><text x="52" y="214">i</text><text x="52" y="228">j</text>
+        </g>
+      </svg>
+      <p class="figcap">Las franjas resaltadas en cobre muestran una columna: los 5 orificios a–e están unidos entre sí, y los 5 orificios f–j forman otro grupo distinto. El canal central los separa.</p>
+    </div>
+
+    <div class="two">
+      <div class="prose">
+        <h3>Zona central (tiras de 5)</h3>
+        <p>Cada columna numerada tiene dos grupos de 5 orificios: <strong>a–e</strong> y <strong>f–j</strong>. Todo lo que conectes en el mismo grupo queda unido eléctricamente.</p>
+        <p>El <strong>canal central</strong> separa ambas mitades. Por eso los circuitos integrados y los botones se colocan encima del canal: así cada pata queda en un grupo distinto.</p>
+      </div>
+      <div class="prose">
+        <h3>Rieles de alimentación (+ y −)</h3>
+        <p>Las filas largas de los bordes recorren la protoboard horizontalmente. Conecta el riel rojo <strong>+</strong> al pin <code>5V</code> y el riel azul <strong>−</strong> a <code>GND</code> para repartir energía a todo el circuito.</p>
+        <div class="note tip"><strong>Ojo:</strong> en algunas protoboards grandes los rieles están cortados a la mitad. Si algo no funciona en un extremo, une las dos mitades con un jumper.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 LED -->
+<section class="block" id="led">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><h2>El LED en detalle</h2></div>
+    <div class="prose">
+      <p>LED significa <em>Light Emitting Diode</em> (diodo emisor de luz). Como todo diodo, deja pasar la corriente <strong>en un solo sentido</strong>. Si lo conectas al revés, simplemente no enciende.</p>
+    </div>
+
+    <div class="two">
+      <div class="figure">
+        <svg viewBox="0 0 360 280" role="img" aria-label="Partes de un LED: ánodo pata larga, cátodo pata corta y lado plano">
+          <path d="M140 150 V80 a40 40 0 0 1 80 0 V150 Z" fill="#e5483b" opacity="0.85"/>
+          <path d="M132 150 H228 V162 H140 Z" fill="#c63a2f"/>
+          <line x1="140" y1="150" x2="140" y2="162" stroke="var(--fg)" stroke-width="2"/>
+          <!-- inner -->
+          <path d="M162 150 V112 h16 l-6 10" stroke="#7d1f18" stroke-width="2" fill="none"/>
+          <path d="M198 150 V118 h-12" stroke="#7d1f18" stroke-width="2" fill="none"/>
+          <!-- legs -->
+          <line x1="162" y1="162" x2="162" y2="240" stroke="var(--hole)" stroke-width="5"/>
+          <line x1="198" y1="162" x2="198" y2="270" stroke="var(--hole)" stroke-width="5"/>
+          <!-- labels -->
+          <g font-size="12" fill="var(--fg)">
+            <line x1="198" y1="250" x2="250" y2="250" stroke="var(--muted)"/>
+            <text x="256" y="246" font-weight="600">Ánodo (+)</text>
+            <text x="256" y="262" class="s-muted">pata larga</text>
+            <line x1="162" y1="230" x2="110" y2="230" stroke="var(--muted)"/>
+            <text x="14" y="226" font-weight="600">Cátodo (−)</text>
+            <text x="14" y="242" class="s-muted">pata corta</text>
+            <line x1="136" y1="158" x2="90" y2="158" stroke="var(--muted)"/>
+            <text x="14" y="154" font-weight="600">Lado plano</text>
+            <text x="14" y="170" class="s-muted">= cátodo</text>
+            <line x1="222" y1="90" x2="262" y2="70" stroke="var(--muted)"/>
+            <text x="266" y="68" font-weight="600">Cápsula</text>
+            <text x="266" y="84" class="s-muted">de resina</text>
+          </g>
+        </svg>
+        <p class="figcap">Truco para recordarlo: la pata <strong>más larga</strong> es la <strong>más</strong> (+).</p>
+      </div>
+
+      <div class="prose">
+        <h3>Características principales</h3>
+        <ul style="margin:0; padding-left:20px; display:grid; gap:8px">
+          <li><strong>Polaridad:</strong> el ánodo (+) va hacia el pin de Arduino o a 5 V; el cátodo (−) va hacia GND.</li>
+          <li><strong>Corriente de trabajo:</strong> entre 10 y 20 mA. Con 15 mA brilla bien y dura mucho.</li>
+          <li><strong>Voltaje directo (Vf):</strong> lo que «consume» el LED. Depende del color (tabla abajo).</li>
+          <li><strong>Nunca sin resistencia:</strong> conectado directo a 5 V, el LED deja pasar demasiada corriente, se calienta y se quema en segundos. También puede dañar el pin del Arduino.</li>
+          <li><strong>Tamaños comunes:</strong> 3 mm y 5 mm.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Color</th><th>Voltaje directo típico (Vf)</th><th>Resistencia sugerida con 5 V</th></tr></thead>
+        <tbody>
+          <tr><td><span class="dot" style="background:#e5483b"></span>Rojo</td><td class="num">1.8 – 2.2 V</td><td class="num">220 Ω</td></tr>
+          <tr><td><span class="dot" style="background:#f2b63b"></span>Amarillo / naranja</td><td class="num">2.0 – 2.2 V</td><td class="num">220 Ω</td></tr>
+          <tr><td><span class="dot" style="background:#3fb55a"></span>Verde</td><td class="num">2.0 – 3.2 V</td><td class="num">220 Ω</td></tr>
+          <tr><td><span class="dot" style="background:#3a7bd5"></span>Azul</td><td class="num">3.0 – 3.4 V</td><td class="num">100 – 150 Ω</td></tr>
+          <tr><td><span class="dot" style="background:#f4f4f4"></span>Blanco</td><td class="num">3.0 – 3.4 V</td><td class="num">100 – 150 Ω</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="figcap">Valores aproximados: revisa la hoja de datos de tu LED. En clase, 220 Ω funciona bien para casi todos los colores.</p>
+  </div>
+</section>
+
+<!-- 05 RESISTENCIAS -->
+<section class="block" id="resistencias">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Resistencias y ley de Ohm</h2></div>
+    <div class="prose">
+      <p>La resistencia se mide en <strong>ohms (Ω)</strong>. No tiene polaridad: se puede conectar en cualquier sentido. Su valor viene impreso con bandas de colores que se leen empezando por el lado opuesto a la banda dorada o plateada.</p>
+      <p>Para calcular qué resistencia necesita un LED usamos la <strong>ley de Ohm</strong>:</p>
+      <p style="font-family:var(--f-mono); font-size:1.15rem; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:12px 16px">R = (V<sub>fuente</sub> − V<sub>LED</sub>) ÷ I</p>
+      <p>Ejemplo con LED rojo: (5 V − 2 V) ÷ 0.020 A = <strong>150 Ω</strong>. Como 150 Ω es el mínimo, usamos el siguiente valor comercial más común: <strong>220 Ω</strong>.</p>
+    </div>
+
+    <div class="two">
+      <div class="tool">
+        <h3>Lector de código de colores</h3>
+        <svg class="res-svg" viewBox="0 0 360 80" aria-label="Resistencia con las bandas seleccionadas">
+          <line x1="0" y1="40" x2="360" y2="40" stroke="var(--hole)" stroke-width="5"/>
+          <rect x="70" y="14" width="220" height="52" rx="22" fill="#e2c99a"/>
+          <rect id="b1" x="100" y="14" width="18" height="52"/>
+          <rect id="b2" x="134" y="14" width="18" height="52"/>
+          <rect id="b3" x="168" y="14" width="18" height="52"/>
+          <rect id="b4" x="246" y="14" width="14" height="52"/>
+        </svg>
+        <div class="fields">
+          <label class="f" for="sel1">1.ª banda<select id="sel1"></select></label>
+          <label class="f" for="sel2">2.ª banda<select id="sel2"></select></label>
+          <label class="f" for="sel3">Multiplicador<select id="sel3"></select></label>
+          <label class="f" for="sel4">Tolerancia<select id="sel4"></select></label>
+        </div>
+        <div class="result" id="resOut" aria-live="polite">220 Ω<small>±5 %</small></div>
+      </div>
+
+      <div class="tool">
+        <h3>Calculadora de resistencia para LED</h3>
+        <div class="fields">
+          <label class="f" for="vs">Voltaje fuente (V)<input id="vs" type="number" step="0.1" value="5"></label>
+          <label class="f" for="vf">Voltaje del LED (V)<input id="vf" type="number" step="0.1" value="2"></label>
+          <label class="f" for="ma">Corriente (mA)<input id="ma" type="number" step="1" value="20"></label>
+        </div>
+        <div class="result" id="ledOut" aria-live="polite">150 Ω<small>Usa 220 Ω (valor comercial)</small></div>
+        <div class="note" id="ledNote">Con 220 Ω circulan unos 13.6 mA: brillo adecuado y LED protegido.</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Color</th><th>Dígito</th><th>Multiplicador</th><th>Tolerancia</th></tr></thead>
+        <tbody id="colorTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 06 BLINK -->
+<section class="block" id="blink">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Primer proyecto: LED que parpadea</h2></div>
+    <div class="prose">
+      <p>El «Blink» es el «Hola mundo» de la electrónica. Harás que un LED externo se encienda un segundo y se apague un segundo, para siempre.</p>
+    </div>
+
+    <div class="two">
+      <div>
+        <h3>Material</h3>
+        <ul class="specs" style="border-top:0; padding-top:8px; font-size:0.95rem">
+          <li><b>Arduino UNO + cable USB</b><span>1</span></li>
+          <li><b>Protoboard</b><span>1</span></li>
+          <li><b>LED rojo de 5 mm</b><span>1</span></li>
+          <li><b>Resistencia de 220 Ω</b><span>1</span></li>
+          <li><b>Cables jumper macho-macho</b><span>2</span></li>
+        </ul>
+      </div>
+      <div class="figure">
+        <svg viewBox="0 0 400 220" role="img" aria-label="Diagrama: pin 13 a resistencia de 220 ohm, luego al ánodo del LED, cátodo a GND">
+          <rect x="16" y="40" width="90" height="140" rx="8" fill="var(--accent)" opacity="0.88"/>
+          <text x="34" y="34" font-size="12" class="s-fg" font-weight="600">Arduino</text>
+          <rect x="96" y="64" width="22" height="16" rx="2" fill="var(--fg)"/>
+          <rect x="96" y="140" width="22" height="16" rx="2" fill="var(--fg)"/>
+          <text x="52" y="76" font-size="12" fill="var(--bg)" font-weight="600">13</text>
+          <text x="44" y="152" font-size="12" fill="var(--bg)" font-weight="600">GND</text>
+          <!-- wire pin13 -->
+          <path d="M118 72 H170" stroke="var(--copper)" stroke-width="4" fill="none"/>
+          <!-- resistor -->
+          <rect x="170" y="62" width="70" height="20" rx="9" fill="#e2c99a"/>
+          <rect x="182" y="62" width="6" height="20" fill="#d1302a"/><rect x="194" y="62" width="6" height="20" fill="#d1302a"/><rect x="206" y="62" width="6" height="20" fill="#7a4a24"/><rect x="224" y="62" width="5" height="20" fill="#c9a227"/>
+          <text x="180" y="54" font-size="11" class="s-muted">220 Ω</text>
+          <path d="M240 72 H310 V96" stroke="var(--copper)" stroke-width="4" fill="none"/>
+          <!-- LED symbol -->
+          <polygon points="292,96 328,96 310,124" fill="#e5483b"/>
+          <line x1="290" y1="126" x2="330" y2="126" stroke="var(--fg)" stroke-width="3"/>
+          <path d="M334 100 l14 -10 M338 110 l14 -10" stroke="#e5483b" stroke-width="2"/>
+          <text x="338" y="118" font-size="10" class="s-muted">+ arriba</text>
+          <text x="338" y="134" font-size="10" class="s-muted">− abajo</text>
+          <path d="M310 126 V148 H118" stroke="var(--fg)" stroke-width="4" fill="none"/>
+          <text x="186" y="172" font-size="11" class="s-muted">cable a tierra (negro)</text>
+        </svg>
+        <p class="figcap">Ruta de la corriente: pin 13 → resistencia → ánodo (+) del LED → cátodo (−) → GND.</p>
+      </div>
+    </div>
+
+    <ol class="steps">
+      <li><div><strong>Coloca el LED</strong> en la protoboard con cada pata en una columna distinta. Fíjate dónde queda la pata larga (+).</div></li>
+      <li><div><strong>Coloca la resistencia</strong> de 220 Ω con una pata en la misma columna que la pata larga del LED y la otra en una columna libre.</div></li>
+      <li><div><strong>Conecta un jumper</strong> desde el pin digital <code>13</code> del Arduino hasta la columna de la pata libre de la resistencia.</div></li>
+      <li><div><strong>Conecta un jumper negro</strong> desde la columna de la pata corta del LED (−) hasta un pin <code>GND</code> del Arduino.</div></li>
+      <li><div><strong>Revisa antes de conectar el USB.</strong> Pide a tu compañero que siga el camino de la corriente con el dedo.</div></li>
+      <li><div><strong>Abre el Arduino IDE</strong>, elige <em>Herramientas → Placa → Arduino UNO</em> y el puerto correcto (COM en Windows, /dev/tty… en Mac y Linux).</div></li>
+      <li><div><strong>Copia el código</strong>, presiona <em>Verificar</em> (✓) y luego <em>Subir</em> (→). Si todo sale bien, el LED parpadeará.</div></li>
+    </ol>
+
+    <div class="code" style="margin-top:24px">
+      <div class="code-bar"><span>blink.ino</span><button class="copy" id="copyBtn" type="button">Copiar código</button></div>
+<pre id="codeBlock"><span class="c">// Mi primer programa: LED que parpadea</span>
+<span class="k">const int</span> pinLed = <span class="n">13</span>;      <span class="c">// pin donde conectamos el LED</span>
+
+<span class="k">void</span> setup() {
+  <span class="c">// se ejecuta UNA vez al encender la placa</span>
+  pinMode(pinLed, OUTPUT); <span class="c">// el pin será una salida</span>
+}
+
+<span class="k">void</span> loop() {
+  <span class="c">// se repite para siempre</span>
+  digitalWrite(pinLed, HIGH); <span class="c">// enciende (5 V)</span>
+  delay(<span class="n">1000</span>);                <span class="c">// espera 1000 ms = 1 segundo</span>
+  digitalWrite(pinLed, LOW);  <span class="c">// apaga (0 V)</span>
+  delay(<span class="n">1000</span>);
+}</pre>
+    </div>
+
+    <div class="two">
+      <div class="prose">
+        <h3>¿Qué hace cada instrucción?</h3>
+        <dl class="gloss" style="margin-top:0">
+          <dt>setup()</dt><dd>Bloque de configuración. Corre una sola vez.</dd>
+          <dt>loop()</dt><dd>Bloque principal. Se repite sin fin.</dd>
+          <dt>pinMode()</dt><dd>Define si un pin es entrada (<code>INPUT</code>) o salida (<code>OUTPUT</code>).</dd>
+          <dt>digitalWrite()</dt><dd>Pone un pin en <code>HIGH</code> (5 V) o <code>LOW</code> (0 V).</dd>
+          <dt>delay()</dt><dd>Pausa el programa los milisegundos indicados.</dd>
+        </dl>
+      </div>
+      <div>
+        <h3>Retos para practicar</h3>
+        <div class="challenges">
+          <div class="ch"><span class="lvl">Fácil</span><p>Haz que parpadee más rápido: cambia los <code>delay</code> a 200 ms.</p></div>
+          <div class="ch"><span class="lvl">Fácil</span><p>Cambia el LED al pin 8. ¿Qué línea del código debes modificar?</p></div>
+          <div class="ch"><span class="lvl">Medio</span><p>Agrega dos LEDs más (pines 9 y 10) y arma un semáforo: verde 3 s, amarillo 1 s, rojo 3 s.</p></div>
+          <div class="ch"><span class="lvl">Medio</span><p>Escribe «SOS» en código Morse: tres cortos, tres largos, tres cortos.</p></div>
+          <div class="ch"><span class="lvl">Reto</span><p>Usa <code>analogWrite()</code> en el pin 9 (PWM) para que el LED aumente y baje su brillo poco a poco.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 REGLAS -->
+<section class="block" id="reglas">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Reglas de oro y errores comunes</h2></div>
+    <div class="rules">
+      <div class="rule good"><span class="tag">Siempre</span><h3>Desconecta el USB para cambiar el circuito</h3><p>Arma y modifica todo sin energía. Conecta el USB al final, cuando hayas revisado.</p></div>
+      <div class="rule good"><span class="tag">Siempre</span><h3>Una resistencia por cada LED</h3><p>Cada LED lleva su propia resistencia de 220 Ω o 330 Ω.</p></div>
+      <div class="rule good"><span class="tag">Siempre</span><h3>Comparte la tierra</h3><p>Todos los componentes deben regresar a GND. Sin tierra común, el circuito no cierra.</p></div>
+      <div class="rule bad"><span class="tag">Nunca</span><h3>Unir 5V con GND directamente</h3><p>Es un cortocircuito: puede calentar el cable, apagar el USB o dañar la placa.</p></div>
+      <div class="rule bad"><span class="tag">Nunca</span><h3>Conectar motores directo a un pin</h3><p>Un pin da como máximo 40 mA. Los motores necesitan un transistor o un driver.</p></div>
+      <div class="rule bad"><span class="tag">Nunca</span><h3>Trabajar sobre superficies metálicas</h3><p>La parte de abajo de la placa tiene soldaduras expuestas que pueden hacer corto.</p></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Síntoma</th><th>Causa probable</th><th>Solución</th></tr></thead>
+        <tbody>
+          <tr><td>El LED no enciende</td><td>LED al revés</td><td>Gíralo: pata larga hacia el pin, corta hacia GND.</td></tr>
+          <tr><td>El LED no enciende</td><td>Patas en el mismo grupo de 5</td><td>Cada pata debe ir en una columna distinta.</td></tr>
+          <tr><td>Error «port not found»</td><td>Puerto no seleccionado</td><td>Herramientas → Puerto. Prueba otro cable USB si no aparece.</td></tr>
+          <tr><td>Error al compilar</td><td>Falta un <code>;</code> o una llave <code>}</code></td><td>Lee la línea marcada en rojo y la anterior.</td></tr>
+          <tr><td>El LED brilla muy poco</td><td>Resistencia demasiado alta</td><td>Verifica las bandas: quizá es de 2.2 kΩ en vez de 220 Ω.</td></tr>
+          <tr><td>Se calienta algo</td><td>Cortocircuito</td><td>Desconecta el USB de inmediato y revisa los cables de 5V y GND.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 08 GLOSARIO -->
+<section class="block" id="glosario">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Glosario rápido</h2></div>
+    <dl class="gloss">
+      <dt>Voltaje (V)</dt><dd>La «presión» que empuja a la corriente. Se mide en volts. Arduino trabaja con 5 V.</dd>
+      <dt>Corriente (I)</dt><dd>La cantidad de electricidad que fluye. Se mide en amperes (A) o miliamperes (mA). 1 A = 1000 mA.</dd>
+      <dt>Resistencia (R)</dt><dd>La oposición al paso de la corriente. Se mide en ohms (Ω). 1 kΩ = 1000 Ω.</dd>
+      <dt>GND</dt><dd>Tierra o referencia de 0 V. Es el polo negativo del circuito.</dd>
+      <dt>Polaridad</dt><dd>Cuando un componente tiene lado positivo y negativo y debe conectarse en un sentido específico.</dd>
+      <dt>Digital</dt><dd>Señal con solo dos valores: encendido/apagado, HIGH/LOW, 1/0.</dd>
+      <dt>Analógico</dt><dd>Señal que puede tomar muchos valores intermedios, como la posición de una perilla.</dd>
+      <dt>PWM</dt><dd>Técnica que enciende y apaga un pin muy rápido para simular voltajes intermedios. Sirve para regular brillo o velocidad.</dd>
+      <dt>Sketch</dt><dd>Nombre que recibe un programa de Arduino. Se guarda con extensión <code>.ino</code>.</dd>
+      <dt>Cortocircuito</dt><dd>Conexión directa entre positivo y negativo sin nada que limite la corriente. Hay que evitarlo siempre.</dd>
+    </dl>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Guía de laboratorio · Automatización de Procesos Industriales y de Servicios · Primeros pasos con Arduino UNO</div>
+</footer>
+
+<script>
+(function () {
+  // Protoboard holes
+  var g = document.getElementById('holes');
+  var ns = 'http://www.w3.org/2000/svg';
+  function hole(x, y) { var c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', 3.2); c.setAttribute('class', 's-hole'); g.appendChild(c); }
+  var rowsTop = [86, 100, 114, 128, 142], rowsBot = [168, 182, 196, 210, 224];
+  for (var i = 0; i < 26; i++) {
+    var x = 80 + i * 20;
+    rowsTop.concat(rowsBot).forEach(function (y) { hole(x, y); });
+    if (i % 6 !== 5) { hole(x, 32); hole(x, 54); hole(x, 246); hole(x, 268); }
+  }
+
+  // Resistor color code
+  var colors = [
+    { n: 'Negro', c: '#1b1b1b', d: 0, m: 1 },
+    { n: 'Café', c: '#7a4a24', d: 1, m: 10, t: '±1 %' },
+    { n: 'Rojo', c: '#d1302a', d: 2, m: 100, t: '±2 %' },
+    { n: 'Naranja', c: '#ec7a1f', d: 3, m: 1e3 },
+    { n: 'Amarillo', c: '#f2cf2b', d: 4, m: 1e4 },
+    { n: 'Verde', c: '#2f9e44', d: 5, m: 1e5, t: '±0.5 %' },
+    { n: 'Azul', c: '#2f63c9', d: 6, m: 1e6, t: '±0.25 %' },
+    { n: 'Violeta', c: '#7d3fb8', d: 7, m: 1e7, t: '±0.1 %' },
+    { n: 'Gris', c: '#8a8a8a', d: 8, m: 1e8 },
+    { n: 'Blanco', c: '#f4f4f4', d: 9, m: 1e9 },
+    { n: 'Dorado', c: '#c9a227', m: 0.1, t: '±5 %' },
+    { n: 'Plateado', c: '#b8bcc2', m: 0.01, t: '±10 %' }
+  ];
+  function fmtMult(m) { if (m >= 1e9) return '×1 GΩ'; if (m >= 1e6) return '×' + (m / 1e6) + ' M'; if (m >= 1e3) return '×' + (m / 1e3) + ' k'; return '×' + m; }
+  var tbody = document.getElementById('colorTable');
+  colors.forEach(function (c) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><span class="dot" style="background:' + c.c + '"></span>' + c.n + '</td><td class="num">' + (c.d !== undefined ? c.d : '—') + '</td><td class="num">' + fmtMult(c.m) + '</td><td class="num">' + (c.t || '—') + '</td>';
+    tbody.appendChild(tr);
+  });
+
+  function fill(sel, list, def) {
+    list.forEach(function (c) { var o = document.createElement('option'); o.value = colors.indexOf(c); o.textContent = c.n; sel.appendChild(o); });
+    sel.value = colors.indexOf(list[def]);
+  }
+  var digits = colors.filter(function (c) { return c.d !== undefined; });
+  var s1 = document.getElementById('sel1'), s2 = document.getElementById('sel2'), s3 = document.getElementById('sel3'), s4 = document.getElementById('sel4');
+  fill(s1, digits, 2); fill(s2, digits, 2);
+  fill(s3, colors.filter(function (c) { return c.m <= 1e6; }), 1);
+  var tols = colors.filter(function (c) { return c.t; });
+  fill(s4, tols, tols.findIndex(function (c) { return c.n === 'Dorado'; }));
+
+  function fmtOhm(v) {
+    var r = function (x) { return parseFloat(x.toFixed(2)).toString().replace('.', '.'); };
+    if (v >= 1e6) return r(v / 1e6) + ' MΩ';
+    if (v >= 1e3) return r(v / 1e3) + ' kΩ';
+    return r(v) + ' Ω';
+  }
+  function updRes() {
+    var a = colors[s1.value], b = colors[s2.value], m = colors[s3.value], t = colors[s4.value];
+    document.getElementById('b1').setAttribute('fill', a.c);
+    document.getElementById('b2').setAttribute('fill', b.c);
+    document.getElementById('b3').setAttribute('fill', m.c);
+    document.getElementById('b4').setAttribute('fill', t.c);
+    var v = (a.d * 10 + b.d) * m.m;
+    document.getElementById('resOut').innerHTML = fmtOhm(v) + '<small>' + t.t + ' · ' + a.n + ', ' + b.n + ', ' + m.n + ', ' + t.n + '</small>';
+  }
+  [s1, s2, s3, s4].forEach(function (s) { s.addEventListener('change', updRes); });
+  updRes();
+
+  // LED calculator
+  var E12 = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82];
+  var common = [100, 150, 220, 330, 470, 680, 1000, 2200, 4700, 10000];
+  function nextCommon(r) { for (var i = 0; i < common.length; i++) if (common[i] >= r) return common[i]; return null; }
+  function updLed() {
+    var vs = parseFloat(document.getElementById('vs').value), vf = parseFloat(document.getElementById('vf').value), ma = parseFloat(document.getElementById('ma').value);
+    var out = document.getElementById('ledOut'), note = document.getElementById('ledNote');
+    if (!(vs > 0) || !(vf > 0) || !(ma > 0)) { out.innerHTML = '—<small>Escribe valores mayores que cero</small>'; note.className = 'note'; note.textContent = 'Completa los tres campos para calcular.'; return; }
+    if (vf >= vs) { out.innerHTML = '—<small>El voltaje de la fuente debe ser mayor que el del LED</small>'; note.className = 'note warn'; note.textContent = 'Con ese voltaje el LED no alcanza a encender. Sube el voltaje de la fuente.'; return; }
+    var r = (vs - vf) / (ma / 1000);
+    var c = nextCommon(r);
+    out.innerHTML = fmtOhm(r) + '<small>' + (c ? 'Usa ' + fmtOhm(c) + ' (valor comercial)' : 'Usa una resistencia de valor mayor') + '</small>';
+    if (ma > 20) { note.className = 'note warn'; note.textContent = 'Más de 20 mA acorta la vida del LED y exige demasiado al pin del Arduino. Usa 20 mA o menos.'; }
+    else if (c) { var i = (vs - vf) / c * 1000; note.className = 'note'; note.textContent = 'Con ' + fmtOhm(c) + ' circulan unos ' + i.toFixed(1) + ' mA: brillo adecuado y LED protegido.'; }
+  }
+  ['vs', 'vf', 'ma'].forEach(function (id) { document.getElementById(id).addEventListener('input', updLed); });
+  updLed();
+
+  // Copy code
+  var btn = document.getElementById('copyBtn');
+  btn.addEventListener('click', function () {
+    var txt = document.getElementById('codeBlock').innerText;
+    function selectFallback() {
+      var r = document.createRange(); r.selectNodeContents(document.getElementById('codeBlock'));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      btn.textContent = 'Seleccionado: Ctrl+C';
+    }
+    try {
+      navigator.clipboard.writeText(txt).then(function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar código'; }, 1800); }, selectFallback);
+    } catch (e) { selectFallback(); }
+  });
+})();
+</script>
+
+</body></html>
