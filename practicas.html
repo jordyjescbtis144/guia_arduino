@@ -421,7 +421,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <span class="card-num">PRÁCTICA 5</span>
           <h2>Display con servos</h2>
           <p>Aprendemos a controlar un servomotor y luego usamos siete para formar un display mecánico que muestra los números del 0 al 9.</p>
-          <div class="tags"><span class="tag">Servo.h</span><span class="tag">write()</span><span class="tag">arreglos</span><span class="tag">for</span><span class="tag">Serial.parseInt</span></div>
+          <div class="tags"><span class="tag">Servo.h</span><span class="tag">write()</span><span class="tag">funciones</span><span class="tag">for</span></div>
           <div class="card-go"><span>Ver práctica →</span><span>2 × 2 h</span></div>
         </div>
       </a>
@@ -1457,7 +1457,7 @@ td.b0 { color: var(--muted); text-align: center; }
             <p class="figcap" style="margin:0 0 6px">Ángulo de cada servo</p>
             <div class="angles" id="p5-angles"></div>
           </div>
-          <div class="serial" id="p5-serial">mostrarNumero(0);</div>
+          <div class="serial" id="p5-serial" style="white-space:normal">mostrar(SI, SI, SI, SI, SI, SI, SI);</div>
         </div>
       </div>
     </div>
@@ -1469,7 +1469,7 @@ td.b0 { color: var(--muted); text-align: center; }
       <div class="prose">
         <p>Un motor normal gira sin parar mientras le llega energía. Un <strong>servomotor</strong> es distinto: tú le dices un <strong>ángulo</strong> entre 0° y 180°, va hacia allá y se queda firme en esa posición, aunque intentes moverlo con la mano.</p>
         <p>Por dentro tiene un motor pequeño, unos engranes que le dan fuerza, un <strong>potenciómetro</strong> que mide en qué posición está el eje y un circuito que compara: «¿ya llegué al ángulo que me pidieron?». Si no, mueve el motor hasta llegar.</p>
-        <p>El Arduino le indica el ángulo con un <strong>pulso</strong> que se repite cada 20 ms. Lo que importa es cuánto dura ese pulso: un pulso corto lo lleva a 0° y uno largo a 180°. La librería <code>Servo</code> hace las cuentas por ti: tú solo escribes <code>miServo.write(90)</code>.</p>
+        <p>El Arduino le dice el ángulo con un <strong>pulso</strong> que se repite cada 20 ms: un pulso corto lo lleva a 0° y uno largo a 180°. No tienes que calcular nada; la librería <code>Servo</code> lo hace por ti. Tú solo escribes <code>miServo.write(90)</code>.</p>
       </div>
       <div>
         <h3 style="margin-bottom:12px">Los tres cables</h3>
@@ -1485,10 +1485,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <li><b>Rango de giro</b><span>0° – 180°</span></li>
           <li><b>Velocidad</b><span>≈ 0.1 s por cada 60°</span></li>
           <li><b>Fuerza (torque)</b><span>≈ 1.8 kg·cm</span></li>
-          <li><b>Corriente quieto</b><span>≈ 10 mA</span></li>
-          <li><b>Corriente moviéndose</b><span>100 – 250 mA</span></li>
-          <li><b>Corriente atorado</b><span>hasta ≈ 650 mA</span></li>
-          <li><b>Señal</b><span>1 pulso cada 20 ms (50 Hz)</span></li>
+          <li><b>Corriente al moverse</b><span>hasta ≈ 250 mA</span></li>
         </ul>
       </div>
     </div>
@@ -1521,7 +1518,6 @@ td.b0 { color: var(--muted); text-align: center; }
       </div>
       <div class="sim-ctrl"><label for="p5-range">Ángulo (mueve el control)</label><input id="p5-range" type="range" min="0" max="180" value="90"></div>
     </div>
-    <p class="formula" style="margin-top:20px">pulso (µs) = 544 + ángulo × (2400 − 544) ÷ 180 ≈ 544 + ángulo × 10.3</p>
     <div class="two">
       <div class="note warn"><strong>Revisa que sea de 180°.</strong> Hay servos SG90 de <strong>rotación continua (360°)</strong> que se ven idénticos. Con <code>write()</code> no van a un ángulo: giran sin parar. Suelen traer «360» en la etiqueta.</div>
       <div class="note tip"><strong>No lo fuerces con la mano</strong> cuando esté encendido: los engranes son de plástico y se barren. Si zumba en 0° o en 180°, está chocando con su tope; usa 5° o 175°.</div>
@@ -1534,7 +1530,7 @@ td.b0 { color: var(--muted); text-align: center; }
       <div class="prose">
         <p>Es el mismo display de los relojes digitales y las calculadoras: <strong>siete segmentos</strong> que se nombran con letras de la <strong>a</strong> a la <strong>g</strong>, empezando arriba y girando como las manecillas del reloj. La <strong>g</strong> es la del centro.</p>
         <p>Para formar un número decides qué segmentos se ven. El 1 solo usa <strong>b</strong> y <strong>c</strong>; el 8 usa los siete.</p>
-        <p>Si escribimos <strong>1</strong> para «se ve» y <strong>0</strong> para «oculto», cada número se convierte en una fila de siete unos y ceros. Esa tabla es justo lo que va a guardar el programa.</p>
+        <p>Si escribimos <strong>SI</strong> cuando el segmento se ve y <strong>NO</strong> cuando se esconde, cada número se convierte en una fila de siete respuestas. Esa fila es justo lo que vamos a escribir en el programa.</p>
         <div class="note"><strong>Antes de ver la tabla:</strong> dibuja los números del 0 al 9 en tu cuaderno y llena tú mismo las filas. Después compara.</div>
       </div>
       <div class="figure" style="max-width:300px;justify-self:center;width:100%">
@@ -1701,125 +1697,157 @@ void loop() {
 
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 3</span><h3>Siete servos: alinear los brazos</h3></div>
-      <p class="prose">Conecta los 7 servos con la fuente externa, todavía <strong>sin los brazos puestos</strong>. Este programa usa un <strong>arreglo</strong> para manejar los siete con un solo <code>for</code>, y te deja escribir el ángulo desde el Monitor Serie.</p>
+      <p class="prose">Conecta los 7 servos con la fuente externa, todavía <strong>sin los brazos puestos</strong>. Este programa crea un servo para cada segmento (<code>segA</code>, <code>segB</code>…) y los manda a todos al ángulo que escribas en <code>ANGULO</code>.</p>
       <div class="code"><div class="code-bar"><span>etapa3_alinear.ino</span><button class="copy" type="button" data-target="p5-c3">Copiar código</button></div>
 <pre id="p5-c3" data-hl>#include &lt;Servo.h&gt;
 
-const int NUM_SEG = 7;
-const int PINES[NUM_SEG] = {2, 3, 4, 5, 6, 7, 8};   // a, b, c, d, e, f, g
-Servo seg[NUM_SEG];                                 // un arreglo de 7 servos
+// Un servo para cada segmento del display
+Servo segA;
+Servo segB;
+Servo segC;
+Servo segD;
+Servo segE;
+Servo segF;
+Servo segG;
+
+// Primero súbelo con 0. Después cámbialo a 90 y súbelo otra vez.
+const int ANGULO = 0;
 
 void setup() {
-  Serial.begin(9600);
-  for (int i = 0; i &lt; NUM_SEG; i++) {
-    seg[i].attach(PINES[i]);
-    seg[i].write(0);
-    delay(150);              // de uno en uno, para no pedir tanta corriente de golpe
-  }
-  Serial.println("Escribe un angulo (0 a 180) y presiona Enter");
+  // Movemos los servos uno por uno, con una pausa entre cada uno
+  segA.attach(2);
+  segA.write(ANGULO);
+  delay(200);
+
+  segB.attach(3);
+  segB.write(ANGULO);
+  delay(200);
+
+  segC.attach(4);
+  segC.write(ANGULO);
+  delay(200);
+
+  segD.attach(5);
+  segD.write(ANGULO);
+  delay(200);
+
+  segE.attach(6);
+  segE.write(ANGULO);
+  delay(200);
+
+  segF.attach(7);
+  segF.write(ANGULO);
+  delay(200);
+
+  segG.attach(8);
+  segG.write(ANGULO);
+  delay(200);
 }
 
 void loop() {
-  if (Serial.available() &gt; 0) {
-    int angulo = Serial.parseInt();        // lee el número que escribiste
-    while (Serial.available() &gt; 0) {
-      Serial.read();                       // descarta el Enter
-    }
-    angulo = constrain(angulo, 0, 180);    // que no se salga del rango
-
-    for (int i = 0; i &lt; NUM_SEG; i++) {
-      seg[i].write(angulo);
-      delay(150);
-    }
-    Serial.print("Servos en ");
-    Serial.print(angulo);
-    Serial.println(" grados");
-  }
+  // vacío: los servos se quedan quietos en su ángulo
 }</pre></div>
       <ol class="steps">
-        <li>Sube el programa. Los servos van a <strong>0°</strong> uno por uno.</li>
+        <li>Sube el programa con <code>ANGULO = 0</code>. Los servos se mueven a <strong>0°</strong> uno por uno.</li>
         <li>Coloca cada brazo con su tira apuntando <strong>hacia afuera del número</strong>, escondida detrás de la máscara.</li>
-        <li>En el Monitor Serie (9600 baudios, «Nueva línea») escribe <strong>90</strong> y presiona Enter. Todas las tiras deben quedar detrás de sus ventanas.</li>
+        <li>Cambia la línea a <code>ANGULO = 90</code> y súbelo otra vez. Todas las tiras deben quedar detrás de sus ventanas.</li>
         <li>Si una tira queda chueca, quita el brazo y recolócalo un diente antes o después. Si gira hacia el lado equivocado, pon ese servo en el otro extremo del segmento.</li>
       </ol>
+      <div class="note"><strong>¿Por qué la pausa de 200 ms?</strong> Si los 7 servos arrancan al mismo tiempo piden mucha corriente de golpe. Moviéndolos uno por uno, la fuente trabaja tranquila.</div>
     </div>
 
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 4</span><h3>El display del 0 al 9</h3></div>
-      <p class="prose">Ahora guardamos la tabla de la sección 03 en un <strong>arreglo de dos dimensiones</strong>: 10 filas (los números) por 7 columnas (los segmentos). La función <code>mostrarNumero()</code> recorre la fila del número y mueve cada servo.</p>
+      <p class="prose">Ya con los brazos alineados, hacemos una <strong>función</strong> llamada <code>mostrar()</code> que recibe 7 valores, uno para cada segmento, en orden de la <strong>a</strong> a la <strong>g</strong>. Cada valor es <code>SI</code> (la tira se ve) o <code>NO</code> (se esconde). Así cada número queda escrito en una sola línea, igual que en la tabla de la sección 03.</p>
       <div class="code"><div class="code-bar"><span>display_servos.ino</span><button class="copy" type="button" data-target="p5-c4">Copiar código</button></div>
 <pre id="p5-c4" data-hl>// ===== Display de 7 segmentos con servos =====
 #include &lt;Servo.h&gt;
 
-const int NUM_SEG = 7;
-const int PINES[NUM_SEG] = {2, 3, 4, 5, 6, 7, 8};   // a, b, c, d, e, f, g
-const int OCULTO  = 0;      // ángulo con la tira escondida
-const int VISIBLE = 90;     // ángulo con la tira en su ventana
+// Un servo para cada segmento
+Servo segA;
+Servo segB;
+Servo segC;
+Servo segD;
+Servo segE;
+Servo segF;
+Servo segG;
 
-// 1 = se ve, 0 = oculto
-//  a  b  c  d  e  f  g
-const byte DIGITOS[10][NUM_SEG] = {
-  { 1, 1, 1, 1, 1, 1, 0 },   // 0
-  { 0, 1, 1, 0, 0, 0, 0 },   // 1
-  { 1, 1, 0, 1, 1, 0, 1 },   // 2
-  { 1, 1, 1, 1, 0, 0, 1 },   // 3
-  { 0, 1, 1, 0, 0, 1, 1 },   // 4
-  { 1, 0, 1, 1, 0, 1, 1 },   // 5
-  { 1, 0, 1, 1, 1, 1, 1 },   // 6
-  { 1, 1, 1, 0, 0, 0, 0 },   // 7
-  { 1, 1, 1, 1, 1, 1, 1 },   // 8
-  { 1, 1, 1, 1, 0, 1, 1 }    // 9
-};
-
-Servo seg[NUM_SEG];
+// Los dos ángulos que usamos
+const int SI = 90;   // la tira se ve
+const int NO = 0;    // la tira se esconde
 
 void setup() {
-  for (int i = 0; i &lt; NUM_SEG; i++) {
-    seg[i].attach(PINES[i]);
-    seg[i].write(OCULTO);
-    delay(150);
-  }
+  segA.attach(2);
+  segB.attach(3);
+  segC.attach(4);
+  segD.attach(5);
+  segE.attach(6);
+  segF.attach(7);
+  segG.attach(8);
 }
 
-// Mueve los 7 servos para formar el número n (de 0 a 9)
-void mostrarNumero(int n) {
-  for (int i = 0; i &lt; NUM_SEG; i++) {
-    if (DIGITOS[n][i] == 1) {
-      seg[i].write(VISIBLE);
-    } else {
-      seg[i].write(OCULTO);
-    }
-    delay(60);    // escalonado: los servos no arrancan todos al mismo tiempo
-  }
+// Mueve los 7 servos. Recibe SI o NO para cada segmento: a, b, c, d, e, f, g
+void mostrar(int a, int b, int c, int d, int e, int f, int g) {
+  segA.write(a);
+  delay(60);
+  segB.write(b);
+  delay(60);
+  segC.write(c);
+  delay(60);
+  segD.write(d);
+  delay(60);
+  segE.write(e);
+  delay(60);
+  segF.write(f);
+  delay(60);
+  segG.write(g);
+  delay(60);
 }
 
 void loop() {
-  for (int n = 0; n &lt;= 9; n++) {
-    mostrarNumero(n);
-    delay(1500);
-  }
+  //      a   b   c   d   e   f   g
+  mostrar(SI, SI, SI, SI, SI, SI, NO);   // número 0
+  delay(1500);
+  mostrar(NO, SI, SI, NO, NO, NO, NO);   // número 1
+  delay(1500);
+  mostrar(SI, SI, NO, SI, SI, NO, SI);   // número 2
+  delay(1500);
+  mostrar(SI, SI, SI, SI, NO, NO, SI);   // número 3
+  delay(1500);
+  mostrar(NO, SI, SI, NO, NO, SI, SI);   // número 4
+  delay(1500);
+  mostrar(SI, NO, SI, SI, NO, SI, SI);   // número 5
+  delay(1500);
+  mostrar(SI, NO, SI, SI, SI, SI, SI);   // número 6
+  delay(1500);
+  mostrar(SI, SI, SI, NO, NO, NO, NO);   // número 7
+  delay(1500);
+  mostrar(SI, SI, SI, SI, SI, SI, SI);   // número 8
+  delay(1500);
+  mostrar(SI, SI, SI, SI, NO, SI, SI);   // número 9
+  delay(1500);
 }</pre></div>
+      <div class="note tip"><strong>Escríbelo por partes:</strong> primero solo el 0 y el 1 en el <code>loop()</code>. Cuando funcionen, agrega los demás números de uno en uno.</div>
     </div>
 
     <div class="two">
       <div class="prose">
         <h3>Lo nuevo en esta práctica</h3>
         <ul class="list">
-          <li><code>#include &lt;Servo.h&gt;</code>: agrega una <strong>librería</strong>, código que alguien más escribió y que podemos usar.</li>
-          <li><code>Servo miServo;</code> crea un servo. <code>attach(pin)</code> le dice en qué pin está y <code>write(ángulo)</code> lo mueve.</li>
-          <li><strong>Arreglos</strong>: <code>PINES[7]</code> guarda 7 valores con un solo nombre. Se leen con su posición, que empieza en 0: <code>PINES[0]</code> es 2 y <code>PINES[6]</code> es 8.</li>
-          <li><strong>Arreglo de dos dimensiones</strong>: <code>DIGITOS[10][7]</code> es una tabla. <code>DIGITOS[n][i]</code> es la fila del número <code>n</code>, columna del segmento <code>i</code>.</li>
-          <li><code>Serial.parseInt()</code> lee un número escrito en el Monitor Serie y <code>constrain()</code> lo mantiene dentro de un rango.</li>
+          <li><code>#include &lt;Servo.h&gt;</code> agrega una <strong>librería</strong>: código que ya viene con el Arduino IDE y que nos ahorra el trabajo de generar los pulsos.</li>
+          <li><code>Servo segA;</code> crea un servo llamado <code>segA</code>. Hicimos siete, uno por segmento.</li>
+          <li><code>attach(2)</code> le dice al servo en qué pin está su cable de señal.</li>
+          <li><code>write(90)</code> lo mueve a 90 grados.</li>
+          <li>Una <strong>función que recibe 7 valores</strong>. Es igual que <code>pitido(duracion, pausa)</code> de la práctica 4, pero con siete datos en lugar de dos.</li>
         </ul>
       </div>
       <div class="prose">
-        <h3>Cómo se lee <code>DIGITOS[n][i]</code></h3>
-        <p>Cuando el programa llama <code>mostrarNumero(7)</code>, recorre la fila 7: <code>{1, 1, 1, 0, 0, 0, 0}</code>.</p>
-        <p>Para <code>i = 0</code> (segmento a) encuentra un 1 y manda ese servo a 90°. Para <code>i = 3</code> (segmento d) encuentra un 0 y lo manda a 0°. Al terminar las 7 columnas se ven a, b y c: un <strong>7</strong>.</p>
-        <p>¿Por qué <code>byte</code> y no <code>int</code>? Un <code>byte</code> ocupa 1 byte de memoria y un <code>int</code> ocupa 2. Para guardar ceros y unos, <code>byte</code> alcanza y gasta la mitad.</p>
+        <h3>Cómo se lee una línea</h3>
+        <p><code>mostrar(SI, SI, SI, NO, NO, NO, NO);</code></p>
+        <p>Los valores van en orden: a = <code>SI</code>, b = <code>SI</code>, c = <code>SI</code>, y d, e, f y g = <code>NO</code>. Se ven a, b y c: es un <strong>7</strong>.</p>
+        <p>¿Por qué <code>SI</code> y <code>NO</code> en lugar de 90 y 0? Porque se lee más fácil. Y si tus servos se ven mejor con 85°, solo cambias la línea <code>const int SI = 85;</code> y se arreglan todos los números.</p>
       </div>
     </div>
-    <div class="note" style="margin-top:20px"><strong>Dato:</strong> la librería <code>Servo</code> usa un temporizador interno del Arduino UNO. Mientras haya servos conectados, <code>analogWrite()</code> deja de funcionar en los pines 9 y 10. Por eso los servos van en los pines 2 a 8.</div>
   </div></section>
 
   <section class="block" id="p5-fal"><div class="wrap">
@@ -1832,10 +1860,10 @@ void loop() {
         <tr><td>Un servo gira sin parar</td><td>Es de rotación continua (360°)</td><td>Cámbialo por uno de 180°. Revisa la etiqueta.</td></tr>
         <tr><td>Zumba y se calienta en 0° o en 180°</td><td>Choca con su tope o la tira roza la máscara</td><td>Usa 5° en vez de 0°, o separa más la máscara.</td></tr>
         <tr><td>Error <code>'Servo' does not name a type</code></td><td>Falta la librería</td><td>La primera línea debe ser <code>#include &lt;Servo.h&gt;</code>.</td></tr>
-        <tr><td>Se mueve el segmento equivocado</td><td>Cables de señal cruzados</td><td>El orden es a→2, b→3, c→4, d→5, e→6, f→7, g→8. Revisa el arreglo <code>PINES</code>.</td></tr>
+        <tr><td>Se mueve el segmento equivocado</td><td>Cables de señal cruzados</td><td>El orden es a→2, b→3, c→4, d→5, e→6, f→7, g→8. Revisa los cables y las líneas <code>attach()</code>.</td></tr>
         <tr><td>Una tira no entra completa en su ventana</td><td>Brazo mal alineado</td><td>Repite la etapa 3 y recoloca el brazo un diente.</td></tr>
-        <tr><td>El Monitor Serie no mueve los servos</td><td>Velocidad o fin de línea</td><td>9600 baudios y «Nueva línea». Escribe solo el número.</td></tr>
-        <tr><td>Un número se forma mal</td><td>Error en la tabla <code>DIGITOS</code></td><td>Compara esa fila con la tabla de la sección 03. Cada fila lleva 7 valores y termina en coma, menos la última.</td></tr>
+        <tr><td>Un número se forma mal</td><td>Error en su línea <code>mostrar()</code></td><td>Compara esa línea con la tabla de la sección 03. Deben ser 7 valores, en orden de la a a la g.</td></tr>
+        <tr><td>Error <code>too few arguments</code></td><td>A un <code>mostrar()</code> le faltan valores</td><td>Cuenta los valores: siempre son 7, separados por comas.</td></tr>
       </tbody>
     </table></div>
   </div></section>
@@ -1843,20 +1871,19 @@ void loop() {
   <section class="block" id="p5-ret"><div class="wrap">
     <div class="sec-head"><span class="sec-num">07</span><h2>Retos</h2></div>
     <div class="challenges">
-      <div class="ch"><span class="lvl">Fácil</span><p>Cuenta regresiva para un despegue: del 9 al 0. Solo tienes que cambiar el <code>for</code> del <code>loop()</code>.</p></div>
-      <div class="ch"><span class="lvl">Fácil</span><p>Baja el <code>delay(1500)</code> a 300 ms. ¿Alcanzan los servos a formar cada número? ¿Cuál es el tiempo mínimo que funciona?</p></div>
-      <div class="ch"><span class="lvl">Medio</span><p>Agrega las letras <strong>A, b, C, d, E, F</strong> como filas 10 a 15 del arreglo, para contar en hexadecimal (cambia el 10 por 16).</p></div>
-      <div class="ch"><span class="lvl">Medio</span><p>Conecta un botón: cada vez que lo presiones, el número sube en 1, y después del 9 vuelve al 0. Usa <code>pinMode(BOTON, INPUT_PULLUP)</code>.</p></div>
-      <div class="ch"><span class="lvl">Medio</span><p>Haz que las tiras giren despacio, como en la etapa 2. Pista: mueve los 7 servos un grado a la vez dentro de un <code>for</code>.</p></div>
-      <div class="ch"><span class="lvl">Reto</span><p>Calibra cada servo por separado: cambia <code>OCULTO</code> y <code>VISIBLE</code> por arreglos de 7 valores, para que cada tira quede perfecta en su ventana.</p></div>
-      <div class="ch"><span class="lvl">Reto</span><p>Une esta práctica con la 4: el HC-SR04 mide la distancia y el display muestra las decenas de centímetros (de 0 a 9, es decir, de 0 a 99 cm).</p></div>
+      <div class="ch"><span class="lvl">Fácil</span><p>Cuenta regresiva para un despegue: del 9 al 0. Solo tienes que cambiar el orden de las líneas del <code>loop()</code>.</p></div>
+      <div class="ch"><span class="lvl">Fácil</span><p>Baja los <code>delay(1500)</code> a 300 ms. ¿Alcanzan los servos a formar cada número? ¿Cuál es el tiempo más corto que funciona bien?</p></div>
+      <div class="ch"><span class="lvl">Fácil</span><p>Muestra tu número de lista, un dígito después de otro. Ejemplo para el 27: un 2, pausa, un 7, pausa larga.</p></div>
+      <div class="ch"><span class="lvl">Medio</span><p>Forma las letras <strong>A, C, E, F, H</strong> y <strong>L</strong> con <code>mostrar()</code>. Dibújalas primero en tu cuaderno para saber qué segmentos llevan <code>SI</code>.</p></div>
+      <div class="ch"><span class="lvl">Medio</span><p>Si una tira no queda derecha, prueba con otros ángulos: cambia <code>SI = 90</code> por 85 o 95 hasta que se vea bien.</p></div>
+      <div class="ch"><span class="lvl">Reto</span><p>Une esta práctica con la 4: con el sensor HC-SR04, muestra un <strong>3</strong> si el obstáculo está lejos, un <strong>2</strong> si está a media distancia y un <strong>1</strong> si está cerca. Usa <code>if / else if / else</code> igual que en el sensor de reversa.</p></div>
     </div>
     <h3 style="margin-top:32px">Preguntas para cerrar</h3>
     <ol class="qs">
-      <li>Si escribes <code>miServo.write(45)</code>, ¿de cuántos microsegundos es el pulso, aproximadamente?</li>
+      <li>¿En qué se diferencia un servomotor de un motor normal?</li>
       <li>¿Por qué no se pueden alimentar los 7 servos desde el pin 5V del Arduino? Haz la cuenta de la corriente.</li>
-      <li>Escribe la fila de unos y ceros del número 4.</li>
-      <li>¿Qué número muestra la fila <code>{1, 0, 1, 1, 0, 1, 1}</code>?</li>
+      <li>Escribe la línea <code>mostrar(...)</code> para el número 4.</li>
+      <li>¿Qué número forma <code>mostrar(SI, NO, SI, SI, NO, SI, SI);</code>?</li>
       <li>¿Dónde se usan servomotores en la vida diaria o en la industria? (Ejemplos: plumas de estacionamiento, brazos robóticos, válvulas, timones de aviones a escala.)</li>
     </ol>
   </div></section>
@@ -1872,8 +1899,8 @@ void loop() {
     </div>
     <h3 style="margin-top:28px">Sesión 2 · Programar el display</h3>
     <div class="timeline">
-      <div class="tl"><span class="t">0:00 – 0:20</span><p>En papel, cada equipo llena la tabla de unos y ceros del 0 al 9 antes de verla en la guía. Se compara en el pizarrón.</p></div>
-      <div class="tl"><span class="t">0:20 – 1:00</span><p>Etapa 4: arreglos de una y dos dimensiones, la función <code>mostrarNumero()</code> y el recorrido de una fila.</p></div>
+      <div class="tl"><span class="t">0:00 – 0:20</span><p>En papel, cada equipo llena la tabla de SI y NO del 0 al 9 antes de verla en la guía. Se compara en el pizarrón.</p></div>
+      <div class="tl"><span class="t">0:20 – 1:00</span><p>Etapa 4: la función <code>mostrar()</code> con sus 7 valores. Primero solo el 0 y el 1; después el resto de los números.</p></div>
       <div class="tl"><span class="t">1:00 – 1:40</span><p>Ajuste fino de las tiras y retos fáciles y medios.</p></div>
       <div class="tl"><span class="t">1:40 – 2:00</span><p>Demostración por equipos (el display cuenta del 0 al 9), preguntas de cierre y evidencia en video.</p></div>
     </div>
@@ -2274,7 +2301,7 @@ void loop() {
   var tbody = document.getElementById('p5-table');
   DIG.forEach(function (row, n) {
     var tr = document.createElement('tr'), html = '<td class="num"><strong>' + n + '</strong></td>', vis = [];
-    row.split('').forEach(function (b, i) { html += '<td class="num b' + b + '">' + b + '</td>'; if (b === '1') vis.push(NAMES[i]); });
+    row.split('').forEach(function (b, i) { html += '<td class="num b' + b + '">' + (b === '1' ? 'SI' : 'NO') + '</td>'; if (b === '1') vis.push(NAMES[i]); });
     tr.innerHTML = html + '<td>' + vis.join(', ') + '</td>';
     tbody.appendChild(tr);
   });
@@ -2335,13 +2362,13 @@ void loop() {
     segTimers.forEach(clearTimeout); segTimers = [];
     cur = n;
     padBtns.forEach(function (b, i) { b.setAttribute('aria-pressed', i === n ? 'true' : 'false'); });
-    var vis = [];
+    var vals = [];
     DIG[n].split('').forEach(function (bit, i) {
-      if (bit === '1') vis.push(NAMES[i]);
+      vals.push(bit === '1' ? 'SI' : 'NO');
       if (instant) setSeg(i, bit === '1');
       else segTimers.push(setTimeout(function () { setSeg(i, bit === '1'); }, i * 60)); // igual que el delay(60) del código
     });
-    serial5.textContent = 'mostrarNumero(' + n + ');  // se ven: ' + vis.join(' ');
+    serial5.textContent = 'mostrar(' + vals.join(', ') + ');   // número ' + n;
   }
   var autoId = 0;
   function stopAuto() { clearInterval(autoId); autoId = 0; autoBtn.textContent = 'Contar 0 → 9'; autoBtn.setAttribute('aria-pressed', 'false'); }
@@ -2382,8 +2409,8 @@ void loop() {
     var end2 = Math.min(290 + w, 316);
     wave.setAttribute('d', 'M0 60 H10 V20 H' + (10 + w).toFixed(1) + ' V60 H290 V20 H' + end2.toFixed(1) + (end2 < 316 ? ' V60 H316' : ''));
     wtxt.setAttribute('x', (16 + w).toFixed(1));
-    wtxt.textContent = '← ' + us + ' µs';
-    pulseTxt.textContent = 'Pulso de ' + us + ' µs (' + (us / 1000).toFixed(2) + ' ms) cada 20 ms. Más largo el pulso, mayor el ángulo.';
+    wtxt.textContent = '← ' + (us / 1000).toFixed(1) + ' ms';
+    pulseTxt.textContent = 'Pulso de ' + (us / 1000).toFixed(1) + ' ms cada 20 ms. Entre más largo el pulso, mayor el ángulo.';
   }
   range5.addEventListener('input', renderServo);
   document.querySelectorAll('#p5-quick [data-ang]').forEach(function (b) {
