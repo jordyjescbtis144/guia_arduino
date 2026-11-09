@@ -9,7 +9,7 @@
 (function(){try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
 </script>
 <meta name="author" content="Jordyjes">
-<meta name="description" content="Cinco prácticas progresivas con Arduino UNO: semáforo, semáforo sonoro, torreta Andon, sensor de reversa y display de 7 segmentos con servomotores.">
+<meta name="description" content="Seis prácticas progresivas con Arduino UNO: semáforo, semáforo sonoro, torreta Andon, sensor de reversa, pluma de estacionamiento con servomotor y un proyecto de display con servos.">
 <style>:root{box-sizing:border-box}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -269,7 +269,8 @@ details.sol .code { margin-top: 12px; }
 .horn-sim { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: 24px; align-items: center; }
 .horn-sim > * { min-width: 0; }
 .horn-sim > svg { display: block; width: 100%; max-width: 340px; height: auto; justify-self: center; }
-#p5-horn { transition: transform .15s ease-out; }
+#p5-horn, #p6-horn { transition: transform .15s ease-out; }
+#p5-arm { transition: transform .35s ease-out; }
 .wave { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
 .wave svg { display: block; width: 100%; max-width: 440px; height: auto; }
 td.b1 { background: var(--copper-soft); color: var(--copper); font-weight: 600; text-align: center; }
@@ -278,7 +279,7 @@ td.b0 { color: var(--muted); text-align: center; }
 .wires span { display: inline-flex; align-items: center; gap: 8px; }
 .wires i { width: 26px; height: 6px; border-radius: 3px; display: inline-block; }
 .steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 70ch; }
-@media (prefers-reduced-motion: reduce) { .strip, #p5-horn, .sv-mask, .sv-pivot { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .strip, #p5-horn, #p6-horn, #p5-arm, .sv-mask, .sv-pivot { transition: none; } }
 @media (max-width: 760px) {
   .sv-sim, .horn-sim { grid-template-columns: 1fr; }
   .sv-sim .digit { max-width: 220px; }
@@ -349,9 +350,9 @@ td.b0 { color: var(--muted); text-align: center; }
     <div class="wrap">
       <div class="eyebrow">Arduino desde cero · Prácticas</div>
       <h1>Prácticas de <span>Arduino</span></h1>
-      <p class="lead">Cada práctica agrega algo nuevo a la anterior: primero controlamos salidas, después las combinamos, las dominamos en una competencia, hacemos que el Arduino reaccione a lo que mide un sensor y al final que mueva cosas con servomotores.</p>
-      <div class="track" aria-hidden="true"><span class="st">1</span><span class="bar"></span><span class="st">2</span><span class="bar"></span><span class="st">3</span><span class="bar"></span><span class="st">4</span><span class="bar"></span><span class="st">5</span></div>
-      <div class="track-lbl" aria-hidden="true"><span>Salidas</span><span>Combinadas</span><span>Repaso</span><span>Sensores</span><span>Actuadores</span></div>
+      <p class="lead">Cada práctica agrega algo nuevo a la anterior: primero controlamos salidas, después las combinamos, las dominamos en una competencia, hacemos que el Arduino reaccione a lo que mide un sensor y que mueva cosas con un servomotor. Al final hay un proyecto para hacer en equipo.</p>
+      <div class="track" aria-hidden="true"><span class="st">1</span><span class="bar"></span><span class="st">2</span><span class="bar"></span><span class="st">3</span><span class="bar"></span><span class="st">4</span><span class="bar"></span><span class="st">5</span><span class="bar"></span><span class="st">6</span></div>
+      <div class="track-lbl" aria-hidden="true"><span>Salidas</span><span>Combinadas</span><span>Repaso</span><span>Sensores</span><span>Actuadores</span><span>Proyecto</span></div>
     </div>
   </header>
 
@@ -416,10 +417,23 @@ td.b0 { color: var(--muted); text-align: center; }
 
       <a class="card" href="#p5">
         <div class="card-art">
-          <svg viewBox="0 0 200 140" aria-hidden="true"><rect x="8" y="58" width="70" height="34" rx="4" fill="var(--accent)"/><rect x="0" y="66" width="86" height="8" rx="2" fill="var(--accent)"/><circle cx="58" cy="75" r="9" fill="var(--fg)"/><rect x="54" y="40" width="8" height="38" rx="4" fill="var(--fg)" transform="rotate(-35 58 75)"/><rect x="108" y="6" width="84" height="128" rx="8" fill="var(--pole)"/><g fill="var(--led-y)"><rect x="126" y="16" width="48" height="10" rx="2"/><rect x="176" y="28" width="10" height="44" rx="2"/><rect x="176" y="76" width="10" height="44" rx="2"/><rect x="126" y="122" width="48" height="10" rx="2" opacity="0.18"/><rect x="114" y="76" width="10" height="44" rx="2" opacity="0.18"/><rect x="114" y="28" width="10" height="44" rx="2" opacity="0.18"/><rect x="126" y="69" width="48" height="10" rx="2" opacity="0.18"/></g></svg>
+          <svg viewBox="0 0 200 140" aria-hidden="true"><rect x="0" y="96" width="200" height="44" fill="var(--road)"/><rect x="128" y="40" width="14" height="60" rx="3" fill="var(--pole)"/><circle cx="135" cy="44" r="10" fill="var(--accent)"/><g transform="rotate(-35 135 44)"><rect x="20" y="39" width="115" height="10" rx="3" fill="#e5483b"/><rect x="34" y="39" width="12" height="10" fill="#f4f4f4"/><rect x="58" y="39" width="12" height="10" fill="#f4f4f4"/><rect x="82" y="39" width="12" height="10" fill="#f4f4f4"/><rect x="106" y="39" width="12" height="10" fill="#f4f4f4"/></g><rect x="160" y="40" width="22" height="56" rx="6" fill="var(--pole)"/><circle cx="171" cy="52" r="6" fill="var(--lamp-off)"/><circle cx="171" cy="68" r="6" fill="var(--lamp-off)"/><circle cx="171" cy="84" r="6" fill="var(--led-g)"/><g transform="translate(12,104) scale(0.4)"><path d="M0 60 L0 34 Q2 26 12 24 L40 20 L66 2 L150 2 L188 24 L206 28 Q214 30 214 40 L214 60 Z" fill="var(--accent)"/></g></svg>
         </div>
         <div class="card-body">
           <span class="card-num">PRÁCTICA 5</span>
+          <h2>Pluma de estacionamiento</h2>
+          <p>Al sensor de reversa le agregamos un servomotor: cuando llega un carro, la pluma sube, da verde unos segundos y vuelve a bajar.</p>
+          <div class="tags"><span class="tag">Servo.h</span><span class="tag">write()</span><span class="tag">HC-SR04</span><span class="tag">if</span></div>
+          <div class="card-go"><span>Ver práctica →</span><span>2 h</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#p6">
+        <div class="card-art">
+          <svg viewBox="0 0 200 140" aria-hidden="true"><rect x="8" y="58" width="70" height="34" rx="4" fill="var(--accent)"/><rect x="0" y="66" width="86" height="8" rx="2" fill="var(--accent)"/><circle cx="58" cy="75" r="9" fill="var(--fg)"/><rect x="54" y="40" width="8" height="38" rx="4" fill="var(--fg)" transform="rotate(-35 58 75)"/><rect x="108" y="6" width="84" height="128" rx="8" fill="var(--pole)"/><g fill="var(--led-y)"><rect x="126" y="16" width="48" height="10" rx="2"/><rect x="176" y="28" width="10" height="44" rx="2"/><rect x="176" y="76" width="10" height="44" rx="2"/><rect x="126" y="122" width="48" height="10" rx="2" opacity="0.18"/><rect x="114" y="76" width="10" height="44" rx="2" opacity="0.18"/><rect x="114" y="28" width="10" height="44" rx="2" opacity="0.18"/><rect x="126" y="69" width="48" height="10" rx="2" opacity="0.18"/></g></svg>
+        </div>
+        <div class="card-body">
+          <span class="card-num">PRÁCTICA 6 · PROYECTO</span>
           <h2>Display con servos</h2>
           <p>Aprendemos a controlar un servomotor y luego usamos siete para formar un display mecánico que muestra los números del 0 al 9.</p>
           <div class="tags"><span class="tag">Servo.h</span><span class="tag">write()</span><span class="tag">funciones</span><span class="tag">ángulos</span></div>
@@ -1457,48 +1471,66 @@ td.b0 { color: var(--muted); text-align: center; }
     <div class="note tip" style="margin-top:18px">Si es la primera vez que arman circuitos físicos, deja que los equipos que terminen la etapa 1 ayuden a los que no. Si alguien se atora en el armado, puede probar primero el mismo circuito en un simulador como TinkerCAD.</div>
   </div></section>
 
-  <div class="wrap pnav"><a href="#p3"><small>Anterior</small>← Práctica 3 · Torreta Andon</a><a class="r" href="#p5"><small>Siguiente</small>Práctica 5 · Display con servos →</a></div>
+  <div class="wrap pnav"><a href="#p3"><small>Anterior</small>← Práctica 3 · Torreta Andon</a><a class="r" href="#p5"><small>Siguiente</small>Práctica 5 · Pluma de estacionamiento →</a></div>
 </div>
 
-<!-- =================== PRÁCTICA 5 · DISPLAY CON SERVOS =================== -->
+<!-- =================== PRÁCTICA 5 · PLUMA DE ESTACIONAMIENTO =================== -->
 <div class="view" id="v-p5" hidden>
   <div class="pbar"><div class="pbar-in">
     <a class="back" href="#inicio">← Prácticas</a>
     <ol>
       <li><button type="button" data-go="p5-sim"><span class="n">01</span>Simulador</button></li>
       <li><button type="button" data-go="p5-ser"><span class="n">02</span>El servo</button></li>
-      <li><button type="button" data-go="p5-dis"><span class="n">03</span>El display</button></li>
-      <li><button type="button" data-go="p5-con"><span class="n">04</span>Conexión</button></li>
-      <li><button type="button" data-go="p5-cod"><span class="n">05</span>Código</button></li>
-      <li><button type="button" data-go="p5-fal"><span class="n">06</span>Si no funciona</button></li>
-      <li><button type="button" data-go="p5-ret"><span class="n">07</span>Retos</button></li>
-      <li><button type="button" data-go="p5-doc"><span class="n">08</span>Docente</button></li>
+      <li><button type="button" data-go="p5-con"><span class="n">03</span>Conexión</button></li>
+      <li><button type="button" data-go="p5-cod"><span class="n">04</span>Código</button></li>
+      <li><button type="button" data-go="p5-fal"><span class="n">05</span>Si no funciona</button></li>
+      <li><button type="button" data-go="p5-ret"><span class="n">06</span>Retos</button></li>
+      <li><button type="button" data-go="p5-doc"><span class="n">07</span>Docente</button></li>
     </ol>
   </div></div>
 
   <header class="hero"><div class="wrap">
     <div class="eyebrow">Práctica 5 · Actuadores</div>
-    <h1>Display con <span>servomotores</span></h1>
-    <p class="lead">Hasta ahora el Arduino encendía luces y sonidos. Ahora va a <strong>mover cosas</strong>. Primero aprendemos a controlar un servomotor; después usamos siete para construir un display mecánico de 7 segmentos que forma los números del 0 al 9.</p>
-    <div class="meta"><span class="chip">7 servos SG90</span><span class="chip">Fuente de 5 V · 2 A</span><span class="chip">Cartón y silicón</span><span class="chip">2 sesiones de 2 horas</span></div>
+    <h1>Pluma de <span>estacionamiento</span></h1>
+    <p class="lead">Al sensor de reversa le agregamos un <strong>servomotor</strong>. Cuando llega un carro, la pluma se levanta, el semáforo da verde unos segundos y después la pluma baja otra vez, igual que en la entrada de una plaza comercial.</p>
+    <div class="meta"><span class="chip">Circuito de la práctica 4</span><span class="chip">+ 1 servo SG90</span><span class="chip">Palito de paleta</span><span class="chip">Sesión de 2 horas</span></div>
   </div></header>
 
   <section class="block" id="p5-sim"><div class="wrap">
     <div class="sec-head"><span class="sec-num">01</span><h2>Así debe funcionar</h2></div>
-    <div class="prose"><p>Cada segmento es una tira de color pegada al brazo de un servo. Cuando el servo está en <strong>90°</strong> la tira queda detrás de su ventana y se ve; en <strong>0°</strong> gira y se esconde detrás del panel. Elige un número o deja que cuente solo. Activa <em>Ver mecanismo</em> para ver qué hacen las tiras detrás del panel.</p></div>
+    <div class="prose"><p>Mueve el control para acercar el carro. Cuando está a <strong>menos de 15 cm</strong>, la pluma sube, el semáforo da verde 3 segundos y después avisa con pitidos y la pluma baja. Fíjate en algo importante: mientras pasa todo eso, el Arduino <strong>no está midiendo</strong>, porque está esperando en los <code>delay()</code>.</p></div>
     <div class="sim">
-      <div class="sim-top"><h3>Simulador del display mecánico</h3><div class="btns"><button class="btn" type="button" id="p5-auto" aria-pressed="false">Contar 0 → 9</button><button class="btn ghost" type="button" id="p5-mech" aria-pressed="false">Ver mecanismo</button></div></div>
-      <div class="sv-sim">
-        <svg class="digit" id="p5-digit" viewBox="-45 -55 375 500" role="img" aria-label="Display de 7 segmentos hecho con servomotores"></svg>
-        <div class="sv-side">
-          <div class="pad" id="p5-pad" role="group" aria-label="Número a mostrar"></div>
-          <div>
-            <p class="figcap" style="margin:0 0 6px">Ángulo de cada servo</p>
-            <div class="angles" id="p5-angles"></div>
-          </div>
-          <div class="serial" id="p5-serial" style="white-space:normal">mostrar(SI, SI, SI, SI, SI, SI, SI);</div>
-        </div>
+      <div class="sim-top"><h3>Simulador de la pluma</h3><div class="btns"><button class="btn" id="p5-sound" type="button" aria-pressed="false">Activar sonido</button></div></div>
+      <div class="scene">
+        <svg viewBox="0 0 640 200" aria-label="Vista desde arriba: un carro se acerca a la pluma de estacionamiento">
+          <defs><pattern id="p5-stripes" width="12" height="24" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#f4f4f4"/><rect y="12" width="12" height="12" fill="#e5483b"/></pattern></defs>
+          <rect x="0" y="0" width="640" height="200" fill="var(--surface-2)"/>
+          <rect x="0" y="40" width="640" height="120" fill="var(--road)"/>
+          <rect x="387" y="40" width="105" height="120" fill="var(--copper)" opacity="0.1"/>
+          <g id="p5-rticks"></g>
+          <g id="p5-waves" fill="none" stroke="var(--accent)" stroke-width="2"></g>
+          <g id="p5-car">
+            <rect x="0" y="0" width="110" height="56" rx="14" fill="var(--accent)"/>
+            <rect x="70" y="7" width="16" height="42" rx="4" fill="var(--bg)" opacity="0.75"/>
+            <rect x="12" y="9" width="12" height="38" rx="4" fill="var(--bg)" opacity="0.75"/>
+            <rect x="105" y="6" width="5" height="9" rx="2" fill="var(--led-y)"/><rect x="105" y="41" width="5" height="9" rx="2" fill="var(--led-y)"/>
+          </g>
+          <rect x="492" y="86" width="12" height="28" rx="2" fill="var(--accent)"/>
+          <circle cx="492" cy="93" r="4" fill="var(--hole)" stroke="var(--fg)"/><circle cx="492" cy="107" r="4" fill="var(--hole)" stroke="var(--fg)"/>
+          <text x="510" y="104" font-size="10" fill="var(--muted)">sensor</text>
+          <rect id="p5-arm" x="466" y="26" width="10" height="140" rx="3" fill="url(#p5-stripes)" stroke="var(--pole)" stroke-width="1" style="transform-box:fill-box;transform-origin:5px 0px"/>
+          <circle cx="471" cy="26" r="9" fill="var(--pole)"/>
+          <text x="420" y="18" font-size="10" fill="var(--muted)">servo</text>
+        </svg>
       </div>
+      <div class="sim-ctrl"><label for="p5-carro">Distancia del carro al sensor (cm)</label><input id="p5-carro" type="range" min="5" max="60" value="45"></div>
+      <div class="panel">
+        <div class="leds" aria-label="Semáforo"><div class="led r" id="p5-lr" title="Rojo"></div><div class="led y" id="p5-ly" title="Amarillo"></div><div class="led g" id="p5-lg" title="Verde"></div></div>
+        <div class="serial" id="p5-serial">Distancia: 45 cm</div>
+        <div class="dist"><span id="p5-dist">45 cm</span><small id="p5-state">Pluma cerrada</small></div>
+      </div>
+      <div class="buzz" id="p5-buzz"><i></i><span id="p5-buzzTxt">Buzzer: en silencio</span></div>
+      <div class="seq" id="p5-seq"></div>
     </div>
   </div></section>
 
@@ -1563,7 +1595,408 @@ td.b0 { color: var(--muted); text-align: center; }
     </div>
   </div></section>
 
-  <section class="block" id="p5-dis"><div class="wrap">
+  <section class="block" id="p5-con"><div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Material y conexión</h2></div>
+    <div class="two">
+      <div>
+        <h3 style="margin-bottom:12px">Material por equipo</h3>
+        <ul class="specs">
+          <li><b>Circuito de la práctica 4 armado</b><span>1</span></li>
+          <li><b>Micro servo SG90 (el de tu kit)</b><span>1</span></li>
+          <li><b>Palito de paleta o abatelenguas</b><span>1</span></li>
+          <li><b>Cinta doble cara o silicón</b><span>—</span></li>
+          <li><b>Cables jumper macho-macho</b><span>3 más</span></li>
+          <li><b>Carro de juguete o una caja pequeña</b><span>1</span></li>
+        </ul>
+        <p class="figcap" style="margin-top:14px">No desarmes nada de la práctica 4: los LEDs, el buzzer y el sensor se quedan en los mismos pines. Solo se agrega el servo.</p>
+      </div>
+      <div class="table-wrap" style="margin-top:0">
+        <table style="min-width:300px">
+          <thead><tr><th>Componente</th><th>Pata</th><th>Va a</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="3">Servo (nuevo)</td><td>Naranja (señal)</td><td class="num">Pin 2</td></tr>
+            <tr><td>Rojo</td><td class="num">5V</td></tr>
+            <tr><td>Café</td><td class="num">GND</td></tr>
+            <tr><td rowspan="2">HC-SR04</td><td>Trig</td><td class="num">Pin 9</td></tr>
+            <tr><td>Echo</td><td class="num">Pin 10</td></tr>
+            <tr><td><span class="dot" style="background:var(--led-g)"></span>LED verde</td><td>Pata larga (+)</td><td class="num">220 Ω → Pin 4</td></tr>
+            <tr><td><span class="dot" style="background:var(--led-y)"></span>LED amarillo</td><td>Pata larga (+)</td><td class="num">220 Ω → Pin 5</td></tr>
+            <tr><td><span class="dot" style="background:var(--led-r)"></span>LED rojo</td><td>Pata larga (+)</td><td class="num">220 Ω → Pin 6</td></tr>
+            <tr><td>Buzzer</td><td>Pata larga (+)</td><td class="num">Pin 8</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="figure" id="p5-fig" style="margin-top:24px">
+      <svg viewBox="0 0 700 400" role="img" aria-label="Diagrama de conexión: circuito del sensor de reversa más un servo en el pin 2">
+        <rect x="20" y="60" width="150" height="270" rx="10" fill="var(--accent)" opacity="0.9"/>
+        <text x="58" y="50" font-size="13" fill="var(--fg)" font-weight="600">Arduino UNO</text>
+        <g font-size="12" fill="var(--bg)" font-weight="600"><text x="112" y="92">5V</text><text x="104" y="122">GND</text><text x="128" y="152">9</text><text x="120" y="182">10</text><text x="128" y="212">4</text><text x="128" y="236">5</text><text x="128" y="260">6</text><text x="128" y="284">8</text><text x="128" y="316">2</text></g>
+        <rect x="430" y="20" width="200" height="70" rx="6" fill="var(--accent)" opacity="0.9"/>
+        <circle cx="480" cy="55" r="20" fill="var(--hole)" stroke="var(--fg)" stroke-width="2"/><circle cx="580" cy="55" r="20" fill="var(--hole)" stroke="var(--fg)" stroke-width="2"/>
+        <text x="486" y="110" font-size="12" fill="var(--fg)" font-weight="600">HC-SR04</text>
+        <g font-size="10" fill="var(--muted)"><text x="430" y="132">VCC</text><text x="470" y="132">Trig</text><text x="512" y="132">Echo</text><text x="556" y="132">GND</text></g>
+        <path d="M170 88 H300 V12 H440 V120" stroke="var(--led-r)" stroke-width="3" fill="none"/>
+        <path d="M170 148 H320 V100 H480 V120" stroke="var(--copper)" stroke-width="3" fill="none"/>
+        <path d="M170 178 H340 V108 H522 V120" stroke="var(--led-y)" stroke-width="3" fill="none"/>
+        <path d="M170 118 H280 V310 H660 V140 H566 V120" stroke="var(--fg)" stroke-width="3" fill="none"/>
+        <path d="M170 208 H380" stroke="var(--led-g)" stroke-width="3"/><path d="M170 232 H380" stroke="var(--led-y)" stroke-width="3"/><path d="M170 256 H380" stroke="var(--led-r)" stroke-width="3"/><path d="M170 280 H380" stroke="var(--copper)" stroke-width="3"/>
+        <rect x="380" y="200" width="44" height="16" rx="7" fill="#e2c99a"/><rect x="380" y="224" width="44" height="16" rx="7" fill="#e2c99a"/><rect x="380" y="248" width="44" height="16" rx="7" fill="#e2c99a"/>
+        <g font-size="9" fill="#5a4630"><text x="384" y="212">220Ω</text><text x="384" y="236">220Ω</text><text x="384" y="260">220Ω</text></g>
+        <path d="M424 208 H470 M424 232 H470 M424 256 H470 M380 280 H468" stroke="var(--fg)" stroke-width="2"/>
+        <polygon points="470,200 470,216 486,208" fill="var(--led-g)"/><line x1="487" y1="199" x2="487" y2="217" stroke="var(--fg)" stroke-width="2"/>
+        <polygon points="470,224 470,240 486,232" fill="var(--led-y)"/><line x1="487" y1="223" x2="487" y2="241" stroke="var(--fg)" stroke-width="2"/>
+        <polygon points="470,248 470,264 486,256" fill="var(--led-r)"/><line x1="487" y1="247" x2="487" y2="265" stroke="var(--fg)" stroke-width="2"/>
+        <circle cx="480" cy="280" r="11" fill="var(--fg)"/><circle cx="480" cy="280" r="3" fill="var(--hole)"/>
+        <text x="440" y="300" font-size="10" fill="var(--muted)">buzzer</text>
+        <path d="M487 208 H540 M487 232 H540 M487 256 H540 M491 280 H540" stroke="var(--fg)" stroke-width="2"/>
+        <line x1="540" y1="200" x2="540" y2="310" stroke="var(--fg)" stroke-width="3"/>
+        <text x="548" y="244" font-size="10" fill="var(--muted)">a GND</text>
+        <path d="M440 12 H675 V376 H560" stroke="var(--led-r)" stroke-width="3" fill="none"/>
+        <path d="M440 350 H420 V310" stroke="#8a5a3c" stroke-width="3" fill="none"/>
+        <path d="M170 312 H250 V372 H440" stroke="#f08c2e" stroke-width="3" fill="none"/>
+        <g><circle cx="440" cy="12" r="4" fill="var(--led-r)"/><circle cx="420" cy="310" r="4" fill="var(--fg)"/></g>
+        <rect x="440" y="340" width="120" height="44" rx="5" fill="var(--accent)"/>
+        <text x="452" y="377" font-size="11" fill="var(--bg)" font-weight="600">SG90</text>
+        <rect x="526" y="357" width="80" height="10" rx="5" fill="url(#p5-stripes)" stroke="var(--pole)"/>
+        <circle cx="530" cy="362" r="7" fill="var(--fg)"/>
+        <text x="300" y="396" font-size="11" fill="var(--fg)" font-weight="600">servo de la pluma (nuevo)</text>
+        <g font-size="10" fill="var(--muted)"><text x="180" y="306">naranja</text><text x="612" y="392">rojo (5V)</text><text x="380" y="346">café</text></g>
+      </svg>
+      <p class="figcap">Es el circuito de la práctica 4 más el servo. El servo comparte el 5V con el sensor y su café va a la misma tierra que todo lo demás.</p>
+    </div>
+
+    <h3 style="margin-top:32px">Cómo armar la pluma</h3>
+    <ol class="steps" style="margin-top:12px">
+      <li>Ponle al servo el <strong>brazo largo de una punta</strong> (viene en la bolsita del servo).</li>
+      <li>Pega un palito de paleta al brazo con cinta o silicón. Si quieres, píntale franjas rojas y blancas.</li>
+      <li>Pega el servo con cinta doble cara a una cajita o a la orilla de la mesa, de modo que el palito quede <strong>horizontal</strong>, como una pluma cerrada.</li>
+      <li>Coloca el sensor junto a la pluma, apuntando hacia donde llegan los carros, a la altura de tu carro de juguete o de tu caja.</li>
+      <li>Con la etapa 2 del código ajusta el brazo: en <code>ABAJO</code> el palito debe quedar horizontal. Si queda chueco, quita el brazo y ponlo un diente antes o después.</li>
+    </ol>
+    <div class="note tip" style="margin-top:20px"><strong>Un servo con un palito ligero sí funciona conectado al 5V del Arduino.</strong> Si el Arduino se reinicia cada vez que la pluma se mueve, el palito es muy pesado o está rozando con algo.</div>
+  </div></section>
+
+  <section class="block" id="p5-cod"><div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><h2>El código, por etapas</h2></div>
+    <div class="prose"><p>Primero probamos el servo solo, después la pluma subiendo y bajando, y al final lo unimos con el sensor de reversa. Si algo falla, sabrás en qué etapa está el error.</p></div>
+
+    <div class="stage">
+      <div class="stage-h"><span class="lvl">Etapa 1</span><h3>Mover el servo a 0°, 90° y 180°</h3></div>
+      <p class="prose">Conecta el servo como en el diagrama: naranja al pin 2, rojo a 5V y café a GND. Todavía <strong>sin el palito</strong>. Este programa es nuevo y reemplaza al de la práctica 4 por un rato; después lo juntamos.</p>
+      <div class="code"><div class="code-bar"><span>etapa1_servo.ino</span><button class="copy" type="button" data-target="p5-c1">Copiar código</button></div>
+<pre id="p5-c1" data-hl>#include &lt;Servo.h&gt;     // librería para servos (ya viene con el IDE)
+
+Servo miServo;          // creamos un servo y le ponemos nombre
+
+void setup() {
+  miServo.attach(2);    // la señal (cable naranja) va al pin 2
+}
+
+void loop() {
+  miServo.write(0);     // ve a 0 grados
+  delay(1000);
+  miServo.write(90);    // ve a 90 grados
+  delay(1000);
+  miServo.write(180);   // ve a 180 grados
+  delay(1000);
+  miServo.write(90);
+  delay(1000);
+}</pre></div>
+      <div class="note tip"><strong>Ponle el brazo</strong> (sin el palito) para ver hacia dónde apunta. Compara las posiciones con el explorador de la sección 02.</div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-h"><span class="lvl">Etapa 2</span><h3>La pluma sube y baja</h3></div>
+      <p class="prose">Le ponemos nombre a los dos ángulos que vamos a usar: <code>ABAJO</code> (pluma cerrada) y <code>ARRIBA</code> (pluma abierta). Así el código se lee como lo que hace. Usa este programa para pegar el palito en su lugar.</p>
+      <div class="code"><div class="code-bar"><span>etapa2_pluma.ino</span><button class="copy" type="button" data-target="p5-c2">Copiar código</button></div>
+<pre id="p5-c2" data-hl>#include &lt;Servo.h&gt;
+
+const int ABAJO  = 0;    // pluma cerrada (palito horizontal)
+const int ARRIBA = 90;   // pluma abierta (palito hacia arriba)
+
+Servo pluma;
+
+void setup() {
+  pluma.attach(2);
+}
+
+void loop() {
+  pluma.write(ARRIBA);   // abre
+  delay(2000);
+  pluma.write(ABAJO);    // cierra
+  delay(2000);
+}</pre></div>
+      <div class="note"><strong>Si la pluma sube hacia el lado equivocado</strong> (se mete debajo de la mesa), cambia los números: <code>ABAJO = 180</code> y <code>ARRIBA = 90</code>.</div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-h"><span class="lvl">Etapa 3</span><h3>Pluma de estacionamiento completa</h3></div>
+      <p class="prose">Ahora juntamos todo. Partimos del código del sensor de reversa: las mismas constantes, el mismo <code>setup()</code> y la misma función <code>medirDistancia()</code>. Lo nuevo está en el <code>loop()</code>: si hay un carro a menos de 15 cm, se hace toda la secuencia de la pluma.</p>
+      <div class="code"><div class="code-bar"><span>pluma_estacionamiento.ino</span><button class="copy" type="button" data-target="p5-c3">Copiar código</button></div>
+<pre id="p5-c3" data-hl>// ===== Pluma de estacionamiento =====
+#include &lt;Servo.h&gt;
+
+const int TRIG = 9;
+const int ECHO = 10;
+const int LED_VERDE    = 4;
+const int LED_AMARILLO = 5;
+const int LED_ROJO     = 6;
+const int BUZZER       = 8;
+
+const int ABAJO  = 0;    // pluma cerrada
+const int ARRIBA = 90;   // pluma abierta
+
+Servo pluma;
+
+void setup() {
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_AMARILLO, OUTPUT);
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+  Serial.begin(9600);
+
+  pluma.attach(2);
+  pluma.write(ABAJO);              // al encender, la pluma empieza cerrada
+  digitalWrite(LED_ROJO, HIGH);    // y el semáforo en rojo
+}
+
+// La misma función de la práctica 4: mide y regresa la distancia en cm
+long medirDistancia() {
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+
+  long tiempo = pulseIn(ECHO, HIGH, 30000);
+  if (tiempo == 0) {
+    return 999;           // no regresó eco: no hay nada enfrente
+  }
+  return tiempo / 58;
+}
+
+void loop() {
+  long distancia = medirDistancia();
+  Serial.print("Distancia: ");
+  Serial.print(distancia);
+  Serial.println(" cm");
+
+  if (distancia &lt; 15) {
+    // 1. Llegó un carro: amarillo, un pitido y la pluma sube
+    digitalWrite(LED_ROJO, LOW);
+    digitalWrite(LED_AMARILLO, HIGH);
+    digitalWrite(BUZZER, HIGH);
+    delay(200);
+    digitalWrite(BUZZER, LOW);
+    pluma.write(ARRIBA);
+    delay(1000);                   // tiempo para que la pluma termine de subir
+    digitalWrite(LED_AMARILLO, LOW);
+
+    // 2. Verde: el carro tiene 3 segundos para pasar
+    digitalWrite(LED_VERDE, HIGH);
+    delay(3000);
+    digitalWrite(LED_VERDE, LOW);
+
+    // 3. Aviso: amarillo y dos pitidos, y la pluma baja
+    digitalWrite(LED_AMARILLO, HIGH);
+    digitalWrite(BUZZER, HIGH);
+    delay(200);
+    digitalWrite(BUZZER, LOW);
+    delay(200);
+    digitalWrite(BUZZER, HIGH);
+    delay(200);
+    digitalWrite(BUZZER, LOW);
+    delay(200);
+    pluma.write(ABAJO);
+    delay(1000);                   // tiempo para que la pluma termine de bajar
+    digitalWrite(LED_AMARILLO, LOW);
+
+    // 4. Cerrado otra vez: rojo
+    digitalWrite(LED_ROJO, HIGH);
+  }
+
+  delay(100);
+}</pre></div>
+      <div class="note"><strong>Si tu buzzer es pasivo</strong> (solo hace «clic»): cambia <code>digitalWrite(BUZZER, HIGH)</code> por <code>tone(BUZZER, 1500)</code> y <code>digitalWrite(BUZZER, LOW)</code> por <code>noTone(BUZZER)</code>.</div>
+    </div>
+
+    <div class="two">
+      <div class="prose">
+        <h3>Lo nuevo en esta práctica</h3>
+        <ul class="list">
+          <li><code>#include &lt;Servo.h&gt;</code> agrega la <strong>librería</strong> de servos: código que ya viene con el Arduino IDE.</li>
+          <li><code>Servo pluma;</code> crea un servo llamado <code>pluma</code>.</li>
+          <li><code>pluma.attach(2)</code> le dice en qué pin está su cable de señal.</li>
+          <li><code>pluma.write(90)</code> lo mueve a 90 grados y ahí se queda.</li>
+          <li><code>const int ARRIBA = 90;</code> le pone nombre a un ángulo, igual que hicimos con los pines.</li>
+        </ul>
+      </div>
+      <div class="prose">
+        <h3>¿Por qué no hay <code>else</code>?</h3>
+        <p>Si no hay carro, no hay nada que cambiar: la pluma ya está abajo y el rojo ya está encendido desde el <code>setup()</code> o desde el final de la última secuencia. Por eso solo usamos <code>if</code>.</p>
+        <p>Y mientras la pluma está arriba, el Arduino está «dormido» en los <code>delay()</code>: no mide nada hasta que termina la secuencia y el <code>loop()</code> vuelve a empezar.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="block" id="p5-fal"><div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Si no funciona</h2></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Síntoma</th><th>Causa probable</th><th>Solución</th></tr></thead>
+      <tbody>
+        <tr><td>Error <code>'Servo' does not name a type</code></td><td>Falta la librería</td><td>La primera línea debe ser <code>#include &lt;Servo.h&gt;</code>.</td></tr>
+        <tr><td>El servo no se mueve</td><td>Cable de señal en otro pin o servo mal conectado</td><td>Naranja al pin 2, rojo a 5V, café a GND. Revisa que diga <code>attach(2)</code>.</td></tr>
+        <tr><td>El Arduino se reinicia cuando la pluma se mueve</td><td>El servo pide demasiada corriente</td><td>Usa un palito ligero y revisa que no roce con nada.</td></tr>
+        <tr><td>Un servo gira sin parar</td><td>Es de rotación continua (360°)</td><td>Pide al docente uno de 180°.</td></tr>
+        <tr><td>La pluma sube hacia el lado equivocado</td><td>El servo está volteado</td><td>Cambia a <code>ABAJO = 180</code> y <code>ARRIBA = 90</code>, o voltea el servo.</td></tr>
+        <tr><td>La pluma no queda horizontal</td><td>Brazo mal colocado</td><td>Sube la etapa 2, quita el brazo y ponlo un diente antes o después.</td></tr>
+        <tr><td>Zumba cuando está abajo</td><td>Choca con su tope</td><td>Usa <code>ABAJO = 5</code> en lugar de 0.</td></tr>
+        <tr><td>La pluma se abre sola</td><td>Algo está frente al sensor</td><td>Revisa en el Monitor Serie qué distancia marca y quita lo que estorbe.</td></tr>
+        <tr><td>Nunca se abre</td><td>El sensor no mide</td><td>Revisa la práctica 4: Trig al pin 9 y Echo al 10. En el Monitor Serie debe cambiar la distancia.</td></tr>
+      </tbody>
+    </table></div>
+  </div></section>
+
+  <section class="block" id="p5-ret"><div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Retos</h2></div>
+    <div class="challenges">
+      <div class="ch"><span class="lvl">Fácil</span><p>Dale más tiempo al carro: que el verde dure 5 segundos.</p></div>
+      <div class="ch"><span class="lvl">Fácil</span><p>Que la pluma se abra cuando el carro esté a menos de 10 cm en lugar de 15.</p></div>
+      <div class="ch"><span class="lvl">Medio</span><p>Que la pluma suba por pasos: <code>write(30)</code>, <code>write(60)</code> y <code>write(90)</code> con una pausa corta entre cada uno, como las plumas reales que suben despacio.</p></div>
+      <div class="ch"><span class="lvl">Medio</span><p>Con buzzer pasivo: un tono agudo al abrir (2000 Hz) y uno grave al cerrar (500 Hz).</p></div>
+      <div class="ch"><span class="lvl">Reto</span><p>¡Que no le caiga la pluma al carro! Antes de bajarla, mide otra vez. Si todavía hay algo a menos de 15 cm, espera 2 segundos más antes de cerrar.</p></div>
+    </div>
+    <h3 style="margin-top:32px">Preguntas para cerrar</h3>
+    <ol class="qs">
+      <li>¿En qué se diferencia un servomotor de un motor normal?</li>
+      <li>¿Cuánto dura toda la secuencia, desde que llega el carro hasta que el rojo se vuelve a encender? Suma los <code>delay()</code>.</li>
+      <li>Mientras la pluma está arriba, ¿el Arduino está midiendo la distancia? ¿Por qué?</li>
+      <li>¿Qué otras máquinas usan un servomotor? (Ejemplos: brazos robóticos, timones de aviones a escala, válvulas, cámaras que giran.)</li>
+    </ol>
+  </div></section>
+
+  <section class="block" id="p5-doc"><div class="wrap">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Para el docente: plan de la sesión</h2></div>
+    <div class="timeline">
+      <div class="tl"><span class="t">0:00 – 0:15</span><p>Pregunta detonadora: ¿cómo sabe la pluma del estacionamiento que llegó un carro y hasta dónde subir? Mostrar el simulador de la pluma y el explorador del servo.</p></div>
+      <div class="tl"><span class="t">0:15 – 0:40</span><p>Etapa 1: conectar el servo al circuito de la práctica 4 y moverlo a 0°, 90° y 180°. Diferencia entre servo y motor normal.</p></div>
+      <div class="tl"><span class="t">0:40 – 1:05</span><p>Armar la pluma con el palito y subir la etapa 2 para que quede horizontal en <code>ABAJO</code>.</p></div>
+      <div class="tl"><span class="t">1:05 – 1:40</span><p>Etapa 3: juntar el sensor con la pluma. Probar con un carro de juguete o una caja. Leer la secuencia en voz alta y sumar los tiempos.</p></div>
+      <div class="tl"><span class="t">1:40 – 2:00</span><p>Retos fáciles, preguntas de cierre y evidencia: video de un carro entrando al estacionamiento.</p></div>
+    </div>
+    <div class="note tip" style="margin-top:18px">Antes de la clase prueba que los servos de los kits sean de 180° y no de 360°. Si un equipo no tiene armada la práctica 4, que la arme primero con su guía: esta práctica la necesita completa.</div>
+  </div></section>
+
+  <div class="wrap pnav"><a href="#p4"><small>Anterior</small>← Práctica 4 · Sensor de reversa</a><a class="r" href="#p6"><small>Siguiente</small>Práctica 6 · Display con servos →</a></div>
+</div>
+
+<!-- =================== PRÁCTICA 6 · DISPLAY CON SERVOS =================== -->
+<div class="view" id="v-p6" hidden>
+  <div class="pbar"><div class="pbar-in">
+    <a class="back" href="#inicio">← Prácticas</a>
+    <ol>
+      <li><button type="button" data-go="p6-sim"><span class="n">01</span>Simulador</button></li>
+      <li><button type="button" data-go="p6-ser"><span class="n">02</span>El servo</button></li>
+      <li><button type="button" data-go="p6-dis"><span class="n">03</span>El display</button></li>
+      <li><button type="button" data-go="p6-con"><span class="n">04</span>Conexión</button></li>
+      <li><button type="button" data-go="p6-cod"><span class="n">05</span>Código</button></li>
+      <li><button type="button" data-go="p6-fal"><span class="n">06</span>Si no funciona</button></li>
+      <li><button type="button" data-go="p6-ret"><span class="n">07</span>Retos</button></li>
+      <li><button type="button" data-go="p6-doc"><span class="n">08</span>Docente</button></li>
+    </ol>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">Práctica 6 · Proyecto en equipo</div>
+    <h1>Display con <span>servomotores</span></h1>
+    <p class="lead">Un proyecto para hacer en equipo: juntamos los servos de varios kits y construimos un display mecánico de 7 segmentos que forma los números del 0 al 9. Necesitas haber hecho antes la práctica 5, donde aprendimos a mover un servo.</p>
+    <div class="meta"><span class="chip">7 servos SG90 (juntar kits)</span><span class="chip">Fuente de 5 V · 2 A</span><span class="chip">Cartón y silicón</span><span class="chip">2 sesiones de 2 horas</span></div>
+  </div></header>
+
+  <section class="block" id="p6-sim"><div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Así debe funcionar</h2></div>
+    <div class="prose"><p>Cada segmento es una tira de color pegada al brazo de un servo. Cuando el servo está en <strong>90°</strong> la tira queda detrás de su ventana y se ve; en <strong>0°</strong> gira y se esconde detrás del panel. Elige un número o deja que cuente solo. Activa <em>Ver mecanismo</em> para ver qué hacen las tiras detrás del panel.</p></div>
+    <div class="sim">
+      <div class="sim-top"><h3>Simulador del display mecánico</h3><div class="btns"><button class="btn" type="button" id="p6-auto" aria-pressed="false">Contar 0 → 9</button><button class="btn ghost" type="button" id="p6-mech" aria-pressed="false">Ver mecanismo</button></div></div>
+      <div class="sv-sim">
+        <svg class="digit" id="p6-digit" viewBox="-45 -55 375 500" role="img" aria-label="Display de 7 segmentos hecho con servomotores"></svg>
+        <div class="sv-side">
+          <div class="pad" id="p6-pad" role="group" aria-label="Número a mostrar"></div>
+          <div>
+            <p class="figcap" style="margin:0 0 6px">Ángulo de cada servo</p>
+            <div class="angles" id="p6-angles"></div>
+          </div>
+          <div class="serial" id="p6-serial" style="white-space:normal">mostrar(SI, SI, SI, SI, SI, SI, SI);</div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="block" id="p6-ser"><div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>El servomotor</h2></div>
+    <div class="two">
+      <div class="prose">
+        <p>Un motor normal gira sin parar mientras le llega energía. Un <strong>servomotor</strong> es distinto: tú le dices un <strong>ángulo</strong> entre 0° y 180°, va hacia allá y se queda firme en esa posición, aunque intentes moverlo con la mano.</p>
+        <p>Por dentro tiene un motor pequeño, unos engranes que le dan fuerza, un <strong>potenciómetro</strong> que mide en qué posición está el eje y un circuito que compara: «¿ya llegué al ángulo que me pidieron?». Si no, mueve el motor hasta llegar.</p>
+        <p>El Arduino le dice el ángulo con un <strong>pulso</strong> que se repite cada 20 ms: un pulso corto lo lleva a 0° y uno largo a 180°. No tienes que calcular nada; la librería <code>Servo</code> lo hace por ti. Tú solo escribes <code>miServo.write(90)</code>.</p>
+      </div>
+      <div>
+        <h3 style="margin-bottom:12px">Los tres cables</h3>
+        <div class="wires">
+          <span><i style="background:#8a5a3c"></i><b>Café</b>&nbsp;GND (−)</span>
+          <span><i style="background:var(--led-r)"></i><b>Rojo</b>&nbsp;5 V (+)</span>
+          <span><i style="background:#f08c2e"></i><b>Naranja</b>&nbsp;señal</span>
+        </div>
+        <p class="figcap">En otras marcas los colores pueden ser negro, rojo y blanco o amarillo. La regla es la misma: el oscuro va a GND, el rojo al positivo y el claro a la señal.</p>
+        <h3 style="margin:22px 0 12px">Micro servo SG90</h3>
+        <ul class="specs">
+          <li><b>Voltaje de trabajo</b><span>4.8 – 6 V</span></li>
+          <li><b>Rango de giro</b><span>0° – 180°</span></li>
+          <li><b>Velocidad</b><span>≈ 0.1 s por cada 60°</span></li>
+          <li><b>Fuerza (torque)</b><span>≈ 1.8 kg·cm</span></li>
+          <li><b>Corriente al moverse</b><span>hasta ≈ 250 mA</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sim">
+      <div class="sim-top"><h3>Explorador del servo</h3><div class="btns" id="p6-quick"><button class="btn ghost" type="button" data-ang="0">0°</button><button class="btn ghost" type="button" data-ang="90">90°</button><button class="btn ghost" type="button" data-ang="180">180°</button></div></div>
+      <div class="horn-sim">
+        <svg viewBox="0 0 300 200" role="img" aria-label="Brazo del servo sobre un transportador">
+          <path d="M40 160 A110 110 0 0 1 260 160" fill="none" stroke="var(--line)" stroke-width="2"/>
+          <g id="p6-ticks"></g>
+          <rect x="100" y="148" width="100" height="44" rx="5" fill="var(--accent)"/>
+          <text x="112" y="184" font-size="11" fill="var(--bg)" font-weight="600">SG90</text>
+          <rect id="p6-horn" x="142" y="154" width="98" height="12" rx="6" fill="var(--copper)" style="transform-box:fill-box;transform-origin:8px 6px"/>
+          <circle cx="150" cy="160" r="9" fill="var(--fg)"/>
+        </svg>
+        <div class="sv-side">
+          <div class="dist" style="text-align:left"><span id="p6-angOut">90°</span><small>ángulo pedido</small></div>
+          <div class="serial" id="p6-write">miServo.write(90);</div>
+          <div class="wave">
+            <svg viewBox="0 0 320 92" role="img" aria-label="Pulso de control del servo">
+              <line x1="10" x2="290" y1="72" y2="72" stroke="var(--muted)" stroke-width="1"/>
+              <line x1="10" x2="10" y1="67" y2="77" stroke="var(--muted)"/><line x1="290" x2="290" y1="67" y2="77" stroke="var(--muted)"/>
+              <text x="150" y="88" font-size="10" text-anchor="middle" fill="var(--muted)">20 ms (un ciclo)</text>
+              <path id="p6-wave" d="" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>
+              <text id="p6-wtxt" x="40" y="22" font-size="11" fill="var(--copper)" font-weight="600"></text>
+            </svg>
+          </div>
+          <p class="figcap" id="p6-pulse" style="margin:0"></p>
+        </div>
+      </div>
+      <div class="sim-ctrl"><label for="p6-range">Ángulo (mueve el control)</label><input id="p6-range" type="range" min="0" max="180" value="90"></div>
+    </div>
+    <div class="two">
+      <div class="note warn"><strong>Revisa que sea de 180°.</strong> Hay servos SG90 de <strong>rotación continua (360°)</strong> que se ven idénticos. Con <code>write()</code> no van a un ángulo: giran sin parar. Suelen traer «360» en la etiqueta.</div>
+      <div class="note tip"><strong>No lo fuerces con la mano</strong> cuando esté encendido: los engranes son de plástico y se barren. Si zumba en 0° o en 180°, está chocando con su tope; usa 5° o 175°.</div>
+    </div>
+  </div></section>
+
+  <section class="block" id="p6-dis"><div class="wrap">
     <div class="sec-head"><span class="sec-num">03</span><h2>El display de 7 segmentos</h2></div>
     <div class="two">
       <div class="prose">
@@ -1588,7 +2021,7 @@ td.b0 { color: var(--muted); text-align: center; }
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>Número</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>Segmentos que se ven</th></tr></thead>
-      <tbody id="p5-table"></tbody>
+      <tbody id="p6-table"></tbody>
     </table></div>
 
     <h3 style="margin-top:36px">Cómo se arma el display</h3>
@@ -1624,7 +2057,7 @@ td.b0 { color: var(--muted); text-align: center; }
     <div class="note tip" style="margin-top:20px"><strong>Antes de pegar nada:</strong> acomoda los servos sobre el tablero con las tiras puestas y gíralas con la mano para comprobar que no choquen entre sí. Orienta el cuerpo de cada servo hacia afuera del número.</div>
   </div></section>
 
-  <section class="block" id="p5-con"><div class="wrap">
+  <section class="block" id="p6-con"><div class="wrap">
     <div class="sec-head"><span class="sec-num">04</span><h2>Material y conexión</h2></div>
     <div class="two">
       <div>
@@ -1658,7 +2091,7 @@ td.b0 { color: var(--muted); text-align: center; }
       </div>
     </div>
     <h3 style="margin-top:32px">Paso 1 · Un solo servo (etapas 1 y 2)</h3>
-    <div class="figure" id="p5-fig1" style="margin-top:14px">
+    <div class="figure" id="p6-fig1" style="margin-top:14px">
       <svg viewBox="0 0 600 280" role="img" aria-label="Diagrama de conexión de un solo servo al Arduino">
         <rect x="20" y="40" width="150" height="220" rx="10" fill="var(--accent)" opacity="0.9"/>
         <text x="44" y="30" font-size="13" fill="var(--fg)" font-weight="600">Arduino UNO</text>
@@ -1680,7 +2113,7 @@ td.b0 { color: var(--muted); text-align: center; }
     </div>
 
     <h3 style="margin-top:32px">Paso 2 · Los 7 servos con fuente externa (etapas 3 y 4)</h3>
-    <div class="figure" id="p5-fig2" style="margin-top:14px">
+    <div class="figure" id="p6-fig2" style="margin-top:14px">
       <svg viewBox="0 0 700 330" role="img" aria-label="Diagrama de conexión de los siete servos con fuente externa">
         <rect x="20" y="40" width="140" height="270" rx="10" fill="var(--accent)" opacity="0.9"/>
         <text x="44" y="30" font-size="13" fill="var(--fg)" font-weight="600">Arduino UNO</text>
@@ -1699,7 +2132,7 @@ td.b0 { color: var(--muted); text-align: center; }
         <g stroke="var(--fg)" stroke-width="2"><line x1="300" y1="80" x2="300" y2="86"/><line x1="290" y1="86" x2="310" y2="86"/><line x1="290" y1="92" x2="310" y2="92"/><line x1="300" y1="92" x2="300" y2="100"/></g>
         <text x="300" y="132" font-size="10" text-anchor="middle" fill="var(--muted)">1000 µF</text>
         <g fill="var(--fg)"><circle cx="580" cy="80" r="4" fill="var(--led-r)"/><circle cx="640" cy="100" r="4"/><circle cx="300" cy="80" r="3.5" fill="var(--led-r)"/><circle cx="300" cy="100" r="3.5"/></g>
-        <g id="p5-wiring"></g>
+        <g id="p6-wiring"></g>
       </svg>
       <p class="figcap">Los servos toman la energía de la <strong>fuente</strong>; el Arduino solo les manda la señal. El cable de GND del Arduino al riel − es obligatorio: sin tierra común los servos no entienden la señal.</p>
     </div>
@@ -1709,16 +2142,16 @@ td.b0 { color: var(--muted); text-align: center; }
     </div>
   </div></section>
 
-  <section class="block" id="p5-cod"><div class="wrap">
+  <section class="block" id="p6-cod"><div class="wrap">
     <div class="sec-head"><span class="sec-num">05</span><h2>El código, por etapas</h2></div>
-    <div class="prose"><p>Empieza con un solo servo y súmale cosas poco a poco. Las etapas 1 y 2 se hacen con un servo sin nada encima; la 3 y la 4, con el display armado y la fuente externa.</p></div>
+    <div class="prose"><p>Las etapas 1 y 2 son un repaso de la práctica 5 con un solo servo; si ya las dominas, pasa directo a la etapa 3. La 3 y la 4 se hacen con el display armado y la fuente externa.</p></div>
 
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 1</span><h3>Mover un servo a tres posiciones</h3></div>
       <p class="prose">Conecta <strong>un solo servo</strong>: naranja al pin 2, rojo al 5V y café al GND del Arduino. Un servo sin carga sí lo aguanta el USB; con más servos ya no.</p>
-      <div data-clone="p5-fig1"></div>
-      <div class="code"><div class="code-bar"><span>etapa1_servo.ino</span><button class="copy" type="button" data-target="p5-c1">Copiar código</button></div>
-<pre id="p5-c1" data-hl>#include &lt;Servo.h&gt;     // librería para servos (ya viene con el IDE)
+      <div data-clone="p6-fig1"></div>
+      <div class="code"><div class="code-bar"><span>etapa1_servo.ino</span><button class="copy" type="button" data-target="p6-c1">Copiar código</button></div>
+<pre id="p6-c1" data-hl>#include &lt;Servo.h&gt;     // librería para servos (ya viene con el IDE)
 
 Servo miServo;          // creamos un servo y le ponemos nombre
 
@@ -1742,8 +2175,8 @@ void loop() {
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 2</span><h3>Movimiento por pasos</h3></div>
       <p class="prose">Con <code>write(180)</code> el servo salta de golpe, a toda velocidad. Si en lugar de eso le pedimos el camino <strong>en pasos pequeños</strong>, con una pausa entre cada uno, se mueve más despacio. Cambia solo el <code>loop()</code>:</p>
-      <div class="code"><div class="code-bar"><span>etapa2_pasos.ino · loop()</span><button class="copy" type="button" data-target="p5-c2">Copiar código</button></div>
-<pre id="p5-c2" data-hl>void loop() {
+      <div class="code"><div class="code-bar"><span>etapa2_pasos.ino · loop()</span><button class="copy" type="button" data-target="p6-c2">Copiar código</button></div>
+<pre id="p6-c2" data-hl>void loop() {
   // de ida: de 0 a 180 en pasos de 30 grados
   miServo.write(0);
   delay(300);
@@ -1770,10 +2203,10 @@ void loop() {
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 3</span><h3>Siete servos: alinear los brazos</h3></div>
       <p class="prose">Conecta los 7 servos con la fuente externa, todavía <strong>sin los brazos puestos</strong>. Este programa crea un servo para cada segmento (<code>segA</code>, <code>segB</code>…) y los manda a todos al ángulo que escribas en <code>ANGULO</code>.</p>
-      <div data-clone="p5-fig2"></div>
+      <div data-clone="p6-fig2"></div>
       <div class="note warn"><strong>Antes de conectar la fuente:</strong> pide al docente que revise el cableado. Los cables rojos de los servos van al riel + de la fuente, nunca al 5V del Arduino.</div>
-      <div class="code"><div class="code-bar"><span>etapa3_alinear.ino</span><button class="copy" type="button" data-target="p5-c3">Copiar código</button></div>
-<pre id="p5-c3" data-hl>#include &lt;Servo.h&gt;
+      <div class="code"><div class="code-bar"><span>etapa3_alinear.ino</span><button class="copy" type="button" data-target="p6-c3">Copiar código</button></div>
+<pre id="p6-c3" data-hl>#include &lt;Servo.h&gt;
 
 // Un servo para cada segmento del display
 Servo segA;
@@ -1833,8 +2266,8 @@ void loop() {
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 4</span><h3>El display del 0 al 9</h3></div>
       <p class="prose">Ya con los brazos alineados, hacemos una <strong>función</strong> llamada <code>mostrar()</code> que recibe 7 valores, uno para cada segmento, en orden de la <strong>a</strong> a la <strong>g</strong>. Cada valor es <code>SI</code> (la tira se ve) o <code>NO</code> (se esconde). Así cada número queda escrito en una sola línea, igual que en la tabla de la sección 03.</p>
-      <div class="code"><div class="code-bar"><span>display_servos.ino</span><button class="copy" type="button" data-target="p5-c4">Copiar código</button></div>
-<pre id="p5-c4" data-hl>// ===== Display de 7 segmentos con servos =====
+      <div class="code"><div class="code-bar"><span>display_servos.ino</span><button class="copy" type="button" data-target="p6-c4">Copiar código</button></div>
+<pre id="p6-c4" data-hl>// ===== Display de 7 segmentos con servos =====
 #include &lt;Servo.h&gt;
 
 // Un servo para cada segmento
@@ -1924,7 +2357,7 @@ void loop() {
     </div>
   </div></section>
 
-  <section class="block" id="p5-fal"><div class="wrap">
+  <section class="block" id="p6-fal"><div class="wrap">
     <div class="sec-head"><span class="sec-num">06</span><h2>Si no funciona</h2></div>
     <div class="table-wrap"><table>
       <thead><tr><th>Síntoma</th><th>Causa probable</th><th>Solución</th></tr></thead>
@@ -1942,7 +2375,7 @@ void loop() {
     </table></div>
   </div></section>
 
-  <section class="block" id="p5-ret"><div class="wrap">
+  <section class="block" id="p6-ret"><div class="wrap">
     <div class="sec-head"><span class="sec-num">07</span><h2>Retos</h2></div>
     <div class="challenges">
       <div class="ch"><span class="lvl">Fácil</span><p>Cuenta regresiva para un despegue: del 9 al 0. Solo tienes que cambiar el orden de las líneas del <code>loop()</code>.</p></div>
@@ -1962,7 +2395,7 @@ void loop() {
     </ol>
   </div></section>
 
-  <section class="block" id="p5-doc"><div class="wrap">
+  <section class="block" id="p6-doc"><div class="wrap">
     <div class="sec-head"><span class="sec-num">08</span><h2>Para el docente: plan de las sesiones</h2></div>
     <h3>Sesión 1 · El servo y la construcción</h3>
     <div class="timeline">
@@ -1984,7 +2417,7 @@ void loop() {
     </div>
   </div></section>
 
-  <div class="wrap pnav"><a href="#p4"><small>Anterior</small>← Práctica 4 · Sensor de reversa</a><a class="r" href="#inicio"><small>Volver a</small>Todas las prácticas</a></div>
+  <div class="wrap pnav"><a href="#p5"><small>Anterior</small>← Práctica 5 · Pluma de estacionamiento</a><a class="r" href="#inicio"><small>Volver a</small>Todas las prácticas</a></div>
 </div>
 
 <script>
@@ -2008,7 +2441,7 @@ void loop() {
   function tone(on) { if (audio.gain) audio.gain.gain.setTargetAtTime(on ? 0.06 : 0, audio.ctx.currentTime, 0.004); }
 
   /* ---------- Router ---------- */
-  var views = ['inicio', 'p1', 'p2', 'p3', 'p4', 'p5'];
+  var views = ['inicio', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
   var stoppers = [];
   function route() {
     var h = (location.hash || '').replace('#', '');
@@ -2347,7 +2780,7 @@ void loop() {
   });
   drawTeams();
 
-  /* ---------- Práctica 5: display con servomotores ---------- */
+  /* ---------- Práctica 6: display con servomotores ---------- */
   document.querySelectorAll('pre[data-hl]').forEach(function (p) { p.innerHTML = hl(p.textContent); });
 
   function el5(tag, attrs, parent) {
@@ -2358,7 +2791,7 @@ void loop() {
   }
 
   // Cableado de los 7 servos en el diagrama de conexión
-  var wiring = document.getElementById('p5-wiring');
+  var wiring = document.getElementById('p6-wiring');
   'abcdefg'.split('').forEach(function (n, i) {
     var sx = 330 + i * 52, py = 180 + i * 16;
     el5('path', { d: 'M160 ' + py + ' H' + (sx + 30) + ' V180', stroke: '#f08c2e', 'stroke-width': 2.5, fill: 'none' }, wiring);
@@ -2383,7 +2816,7 @@ void loop() {
   // Tabla de dígitos
   var DIG = ['1111110', '0110000', '1101101', '1111001', '0110011', '1011011', '1011111', '1110000', '1111111', '1111011'];
   var NAMES = 'abcdefg'.split('');
-  var tbody = document.getElementById('p5-table');
+  var tbody = document.getElementById('p6-table');
   DIG.forEach(function (row, n) {
     var tr = document.createElement('tr'), html = '<td class="num"><strong>' + n + '</strong></td>', vis = [];
     row.split('').forEach(function (b, i) { html += '<td class="num b' + b + '">' + (b === '1' ? 'SI' : 'NO') + '</td>'; if (b === '1') vis.push(NAMES[i]); });
@@ -2401,7 +2834,7 @@ void loop() {
     { px: 70, py: 81, base: 90, hide: 90 },   // f: hacia la izquierda
     { px: 91, py: 194, base: 0, hide: -90 }   // g: hacia arriba, dentro del número
   ];
-  var digit = document.getElementById('p5-digit');
+  var digit = document.getElementById('p6-digit');
   el5('rect', { x: -45, y: -55, width: 375, height: 500, rx: 16, fill: 'var(--lamp-off)' }, digit);
   var maskD = 'M-45 -55 h375 v500 h-375 z';
   SEGS.forEach(function (s) {
@@ -2420,8 +2853,8 @@ void loop() {
     t.textContent = NAMES[i];
   });
 
-  var pad = document.getElementById('p5-pad'), anglesEl = document.getElementById('p5-angles'), serial5 = document.getElementById('p5-serial');
-  var autoBtn = document.getElementById('p5-auto'), mechBtn = document.getElementById('p5-mech');
+  var pad = document.getElementById('p6-pad'), anglesEl = document.getElementById('p6-angles'), serial5 = document.getElementById('p6-serial');
+  var autoBtn = document.getElementById('p6-auto'), mechBtn = document.getElementById('p6-mech');
   var padBtns = [], chips = [];
   for (var d = 0; d <= 9; d++) {
     var b = document.createElement('button');
@@ -2471,37 +2904,122 @@ void loop() {
   stoppers.push(stopAuto);
   show(8, true);
 
-  // Explorador del servo: ángulo → brazo y pulso
-  var ticks5 = document.getElementById('p5-ticks');
-  for (var a = 0; a <= 180; a += 15) {
-    var rad = a * Math.PI / 180, c = Math.cos(rad), s = Math.sin(rad), big = a % 45 === 0;
-    el5('line', { x1: 150 + (big ? 98 : 103) * c, y1: 160 - (big ? 98 : 103) * s, x2: 150 + 110 * c, y2: 160 - 110 * s, stroke: 'var(--muted)', 'stroke-width': big ? 2 : 1 }, ticks5);
-    if (big) {
-      var lt = el5('text', { x: 150 + 124 * c, y: 164 - 124 * s, 'font-size': 11, 'text-anchor': 'middle', fill: 'var(--muted)' }, ticks5);
-      lt.textContent = a + '°';
+  // Explorador del servo (prácticas 5 y 6): ángulo → brazo y pulso
+  function servoExplorer(px) {
+    var $ = function (id) { return document.getElementById(px + '-' + id); };
+    var ticksE = $('ticks');
+    for (var a = 0; a <= 180; a += 15) {
+      var rad = a * Math.PI / 180, c = Math.cos(rad), s = Math.sin(rad), big = a % 45 === 0;
+      el5('line', { x1: 150 + (big ? 98 : 103) * c, y1: 160 - (big ? 98 : 103) * s, x2: 150 + 110 * c, y2: 160 - 110 * s, stroke: 'var(--muted)', 'stroke-width': big ? 2 : 1 }, ticksE);
+      if (big) {
+        var lt = el5('text', { x: 150 + 124 * c, y: 164 - 124 * s, 'font-size': 11, 'text-anchor': 'middle', fill: 'var(--muted)' }, ticksE);
+        lt.textContent = a + '°';
+      }
     }
+    var rangeE = $('range'), horn = $('horn'), angOut = $('angOut'), writeE = $('write');
+    var wave = $('wave'), wtxt = $('wtxt'), pulseTxt = $('pulse');
+    function renderServo() {
+      var ang = parseInt(rangeE.value, 10);
+      var us = Math.round(544 + ang * (2400 - 544) / 180);
+      var w = us / 20000 * 280;
+      horn.style.transform = 'rotate(' + (-ang) + 'deg)';
+      angOut.textContent = ang + '°';
+      writeE.textContent = 'miServo.write(' + ang + ');';
+      var end2 = Math.min(290 + w, 316);
+      wave.setAttribute('d', 'M0 60 H10 V20 H' + (10 + w).toFixed(1) + ' V60 H290 V20 H' + end2.toFixed(1) + (end2 < 316 ? ' V60 H316' : ''));
+      wtxt.setAttribute('x', (16 + w).toFixed(1));
+      wtxt.textContent = '← ' + (us / 1000).toFixed(1) + ' ms';
+      pulseTxt.textContent = 'Pulso de ' + (us / 1000).toFixed(1) + ' ms cada 20 ms. Entre más largo el pulso, mayor el ángulo.';
+    }
+    rangeE.addEventListener('input', renderServo);
+    document.querySelectorAll('#' + px + '-quick [data-ang]').forEach(function (b) {
+      b.addEventListener('click', function () { rangeE.value = b.getAttribute('data-ang'); renderServo(); });
+    });
+    renderServo();
   }
-  var range5 = document.getElementById('p5-range'), horn = document.getElementById('p5-horn');
-  var angOut = document.getElementById('p5-angOut'), write5 = document.getElementById('p5-write');
-  var wave = document.getElementById('p5-wave'), wtxt = document.getElementById('p5-wtxt'), pulseTxt = document.getElementById('p5-pulse');
-  function renderServo() {
-    var ang = parseInt(range5.value, 10);
-    var us = Math.round(544 + ang * (2400 - 544) / 180);
-    var w = us / 20000 * 280;
-    horn.style.transform = 'rotate(' + (-ang) + 'deg)';
-    angOut.textContent = ang + '°';
-    write5.textContent = 'miServo.write(' + ang + ');';
-    var end2 = Math.min(290 + w, 316);
-    wave.setAttribute('d', 'M0 60 H10 V20 H' + (10 + w).toFixed(1) + ' V60 H290 V20 H' + end2.toFixed(1) + (end2 < 316 ? ' V60 H316' : ''));
-    wtxt.setAttribute('x', (16 + w).toFixed(1));
-    wtxt.textContent = '← ' + (us / 1000).toFixed(1) + ' ms';
-    pulseTxt.textContent = 'Pulso de ' + (us / 1000).toFixed(1) + ' ms cada 20 ms. Entre más largo el pulso, mayor el ángulo.';
-  }
-  range5.addEventListener('input', renderServo);
-  document.querySelectorAll('#p5-quick [data-ang]').forEach(function (b) {
-    b.addEventListener('click', function () { range5.value = b.getAttribute('data-ang'); renderServo(); });
-  });
-  renderServo();
+  servoExplorer('p5');
+  servoExplorer('p6');
+
+  /* ---------- Práctica 5: pluma de estacionamiento ---------- */
+  (function () {
+    var SX = 492, SC = 7;   // x del sensor y pixeles por centímetro
+    var ticksP = document.getElementById('p5-rticks');
+    [15, 30, 45, 60].forEach(function (cm) {
+      var x = SX - cm * SC;
+      el5('line', { x1: x, x2: x, y1: 160, y2: 168, stroke: 'var(--muted)', 'stroke-width': 1.5 }, ticksP);
+      var t = el5('text', { x: x, y: 182, 'font-size': 11, 'text-anchor': 'middle', fill: cm === 15 ? 'var(--copper)' : 'var(--muted)' }, ticksP);
+      t.textContent = cm + ' cm';
+    });
+    var zl = el5('text', { x: SX - 2, y: 196, 'font-size': 10, 'text-anchor': 'end', fill: 'var(--copper)' }, ticksP);
+    zl.textContent = 'zona de detección';
+
+    var range = document.getElementById('p5-carro'), car = document.getElementById('p5-car'), waves = document.getElementById('p5-waves');
+    var arm = document.getElementById('p5-arm');
+    var L = { r: document.getElementById('p5-lr'), y: document.getElementById('p5-ly'), g: document.getElementById('p5-lg') };
+    var serial = document.getElementById('p5-serial'), distOut = document.getElementById('p5-dist'), stateOut = document.getElementById('p5-state');
+    var buzz = document.getElementById('p5-buzz'), buzzTxt = document.getElementById('p5-buzzTxt'), sndBtn = document.getElementById('p5-sound');
+    var seqEl = document.getElementById('p5-seq');
+    var STEPS = [
+      ['1. Llegó un carro: amarillo, pitido y la pluma sube', 'var(--led-y)', '1.2 s'],
+      ['2. Verde: el carro puede pasar', 'var(--led-g)', '3 s'],
+      ['3. Aviso: amarillo, 2 pitidos y la pluma baja', 'var(--led-y)', '1.8 s'],
+      ['4. Rojo: pluma cerrada, el Arduino mide', 'var(--led-r)', 'cada 0.1 s']
+    ];
+    var rows = STEPS.map(function (s) {
+      var row = document.createElement('div'); row.className = 'seq-row';
+      row.innerHTML = '<span class="sw" style="background:' + s[1] + '"></span><span>' + s[0] + '</span><span class="ms">' + s[2] + '</span>';
+      seqEl.appendChild(row); return row;
+    });
+    var busy = false, timers = [], sound = false;
+    function mark(i) { rows.forEach(function (r, j) { r.classList.toggle('cur', j === i); }); }
+    function lamp(c) { ['r', 'y', 'g'].forEach(function (k) { L[k].classList.toggle('on', k === c); }); }
+    function beep(on) {
+      buzz.classList.toggle('on', on);
+      buzzTxt.textContent = on ? 'Buzzer: pitido' : 'Buzzer: en silencio';
+      if (!document.getElementById('v-p5').hidden) tone(on && sound);
+    }
+    function armUp(up) { arm.style.transform = up ? 'rotate(-90deg)' : 'rotate(0deg)'; }
+    function at(t, f) { timers.push(setTimeout(f, t)); }
+    function idle() { busy = false; timers = []; mark(3); lamp('r'); beep(false); armUp(false); stateOut.textContent = 'Pluma cerrada'; }
+    function start() {
+      busy = true;
+      serial.textContent = 'Secuencia en marcha: el Arduino no mide hasta que termine';
+      mark(0); lamp('y'); beep(true); stateOut.textContent = 'Abriendo';
+      at(200, function () { beep(false); armUp(true); });
+      at(1200, function () { mark(1); lamp('g'); stateOut.textContent = 'Puede pasar'; });
+      at(4200, function () { mark(2); lamp('y'); beep(true); stateOut.textContent = 'Cerrando'; });
+      at(4400, function () { beep(false); });
+      at(4600, function () { beep(true); });
+      at(4800, function () { beep(false); });
+      at(5000, function () { armUp(false); });
+      at(6000, function () { idle(); render(); });   // el loop() vuelve a empezar y mide otra vez
+    }
+    function render() {
+      var d = parseInt(range.value, 10), front = SX - d * SC;
+      car.setAttribute('transform', 'translate(' + (front - 110) + ',72)');
+      waves.innerHTML = '';
+      for (var i = 1; i <= 3; i++) {
+        var r = Math.min(d * SC, 14 * i);
+        if (r < 4) continue;
+        var p = el5('path', { d: 'M' + (SX - r * 0.5) + ' ' + (100 - r * 0.85) + ' Q' + (SX - r) + ' 100 ' + (SX - r * 0.5) + ' ' + (100 + r * 0.85), opacity: 1 - i * 0.25 }, waves);
+      }
+      distOut.textContent = d + ' cm';
+      if (busy) return;
+      serial.textContent = 'Distancia: ' + d + ' cm';
+      if (d < 15) start();
+    }
+    range.addEventListener('input', render);
+    sndBtn.addEventListener('click', function () {
+      sound = !sound; if (sound) ensureAudio();
+      sndBtn.setAttribute('aria-pressed', sound); sndBtn.textContent = sound ? 'Silenciar' : 'Activar sonido';
+      tone(sound && buzz.classList.contains('on'));
+    });
+    stoppers.push(function () {
+      timers.forEach(clearTimeout); idle();
+      if (sound) { sound = false; sndBtn.setAttribute('aria-pressed', 'false'); sndBtn.textContent = 'Activar sonido'; }
+    });
+    idle(); render();
+  })();
 
   /* ---------- Copiar código ---------- */
   document.querySelectorAll('.copy').forEach(function (b) {
