@@ -369,7 +369,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <span class="card-num">PRÁCTICA 1</span>
           <h2>Semáforo</h2>
           <p>Tres LEDs que siguen la secuencia de un semáforo mexicano: verde, verde parpadeante, amarillo y rojo.</p>
-          <div class="tags"><span class="tag">pinMode</span><span class="tag">digitalWrite</span><span class="tag">delay</span><span class="tag">for</span></div>
+          <div class="tags"><span class="tag">pinMode</span><span class="tag">digitalWrite</span><span class="tag">delay</span><span class="tag">const int</span></div>
           <div class="card-go"><span>Ver práctica →</span><span>2 h</span></div>
         </div>
       </a>
@@ -382,7 +382,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <span class="card-num">PRÁCTICA 2</span>
           <h2>Semáforo sonoro</h2>
           <p>Al semáforo le agregamos un buzzer que suena mientras el LED rojo está encendido, como los semáforos peatonales sonoros.</p>
-          <div class="tags"><span class="tag">buzzer</span><span class="tag">activo / pasivo</span><span class="tag">tone()</span><span class="tag">for</span></div>
+          <div class="tags"><span class="tag">buzzer</span><span class="tag">activo / pasivo</span><span class="tag">tone()</span><span class="tag">calcular tiempos</span></div>
           <div class="card-go"><span>Ver práctica →</span><span>2 h</span></div>
         </div>
       </a>
@@ -395,7 +395,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <span class="card-num">PRÁCTICA 3 · REPASO</span>
           <h2>Torreta Andon</h2>
           <p>Competencia por equipos: en cada ronda aparece un patrón de luces y sonido de una fábrica y gana quien lo programe primero.</p>
-          <div class="tags"><span class="tag">diagrama de tiempos</span><span class="tag">digitalWrite</span><span class="tag">for</span><span class="tag">funciones</span></div>
+          <div class="tags"><span class="tag">diagrama de tiempos</span><span class="tag">digitalWrite</span><span class="tag">secuencias</span><span class="tag">funciones</span></div>
           <div class="card-go"><span>Ver práctica →</span><span>2 h</span></div>
         </div>
       </a>
@@ -546,7 +546,7 @@ td.b0 { color: var(--muted); text-align: center; }
     </div>
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 2</span><h3>Con verde parpadeante</h3></div>
-      <p class="prose">Agregamos el parpadeo con un ciclo <code>for</code>, que repite un bloque las veces que le indiquemos.</p>
+      <p class="prose">Agregamos el parpadeo: apagar, esperar, encender, esperar… tres veces. Cada parpadeo son las mismas cuatro líneas, escritas una vez por cada parpadeo.</p>
       <div class="code"><div class="code-bar"><span>semaforo.ino</span><button class="copy" type="button" data-target="p1-c2">Copiar código</button></div>
 <pre id="p1-c2"><span class="k">const int</span> LED_VERDE    = <span class="n">4</span>;
 <span class="k">const int</span> LED_AMARILLO = <span class="n">5</span>;
@@ -563,14 +563,25 @@ td.b0 { color: var(--muted); text-align: center; }
   digitalWrite(LED_VERDE, HIGH);
   delay(<span class="n">4000</span>);
 
-  <span class="c">// Verde parpadea 3 veces</span>
-  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i < <span class="n">3</span>; i++) {
-    digitalWrite(LED_VERDE, LOW);
-    delay(<span class="n">250</span>);
-    digitalWrite(LED_VERDE, HIGH);
-    delay(<span class="n">250</span>);
-  }
+  <span class="c">// Verde parpadea: 1.ª vez</span>
   digitalWrite(LED_VERDE, LOW);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(<span class="n">250</span>);
+
+  <span class="c">// 2.ª vez</span>
+  digitalWrite(LED_VERDE, LOW);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(<span class="n">250</span>);
+
+  <span class="c">// 3.ª vez</span>
+  digitalWrite(LED_VERDE, LOW);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(<span class="n">250</span>);
+
+  digitalWrite(LED_VERDE, LOW);   <span class="c">// apagamos el verde antes del amarillo</span>
 
   <span class="c">// Amarillo</span>
   digitalWrite(LED_AMARILLO, HIGH);
@@ -591,14 +602,14 @@ td.b0 { color: var(--muted); text-align: center; }
           <li><code>pinMode(pin, OUTPUT)</code>: el pin va a dar voltaje (salida).</li>
           <li><code>digitalWrite(pin, HIGH / LOW)</code>: enciende (5 V) o apaga (0 V).</li>
           <li><code>delay(ms)</code>: espera. 1000 ms = 1 segundo.</li>
-          <li><code>for</code>: repite un bloque de instrucciones un número fijo de veces.</li>
+          <li><code>// comentario</code>: todo lo que va después de <code>//</code> es una nota para personas. El Arduino lo ignora.</li>
         </ul>
       </div>
       <div class="prose">
-        <h3>Cómo se lee el <code>for</code></h3>
-        <p class="formula">for (int i = 0; i &lt; 3; i++)</p>
-        <p><code>i = 0</code>: empieza a contar en cero. <code>i &lt; 3</code>: repite mientras i sea menor que 3. <code>i++</code>: suma 1 en cada vuelta.</p>
-        <p>Resultado: el bloque se ejecuta con i = 0, 1 y 2, o sea <strong>3 veces</strong>.</p>
+        <h3>Cómo se arma un parpadeo</h3>
+        <p>Un parpadeo son 4 líneas: apagar, esperar 250 ms, encender, esperar 250 ms. En total, medio segundo.</p>
+        <p>Para que parpadee 3 veces, esas 4 líneas se escriben <strong>3 veces</strong>, una debajo de otra. El Arduino las ejecuta en orden, de arriba hacia abajo.</p>
+        <p>Al final apagamos el verde, porque si no se quedaría encendido junto con el amarillo.</p>
       </div>
     </div>
   </div></section>
@@ -628,7 +639,7 @@ td.b0 { color: var(--muted); text-align: center; }
     <h3 style="margin-top:32px">Preguntas para cerrar</h3>
     <ol class="qs">
       <li>¿Cuánto dura un ciclo completo del semáforo de la etapa 2?</li>
-      <li>¿Qué pasa si quitas la línea <code>digitalWrite(LED_VERDE, LOW)</code> que está después del <code>for</code>?</li>
+      <li>¿Qué pasa si quitas la última línea <code>digitalWrite(LED_VERDE, LOW)</code>, la que va antes del amarillo?</li>
       <li>¿Por qué cada LED necesita su propia resistencia?</li>
     </ol>
   </div></section>
@@ -639,7 +650,7 @@ td.b0 { color: var(--muted); text-align: center; }
       <div class="tl"><span class="t">0:00 – 0:15</span><p>Repaso rápido de LED, resistencia y protoboard con la guía de inicio. Mostrar el simulador y preguntar: ¿qué hace un semáforo antes de cambiar a amarillo?</p></div>
       <div class="tl"><span class="t">0:15 – 0:50</span><p>Armado de los tres LEDs. Revisión por parejas antes de conectar el USB.</p></div>
       <div class="tl"><span class="t">0:50 – 1:20</span><p>Etapa 1: semáforo básico. Explicar <code>setup()</code>, <code>loop()</code>, <code>pinMode</code>, <code>digitalWrite</code> y <code>delay</code>.</p></div>
-      <div class="tl"><span class="t">1:20 – 1:45</span><p>Etapa 2: parpadeo con <code>for</code>. Contar en voz alta las vueltas del ciclo.</p></div>
+      <div class="tl"><span class="t">1:20 – 1:45</span><p>Etapa 2: parpadeo del verde. Leer el código en voz alta, línea por línea, y contar los parpadeos.</p></div>
       <div class="tl"><span class="t">1:45 – 2:00</span><p>Retos fáciles, preguntas de cierre y evidencia: video del ciclo completo.</p></div>
     </div>
   </div></section>
@@ -787,15 +798,23 @@ td.b0 { color: var(--muted); text-align: center; }
 }
 
 <span class="k">void</span> loop() {
-  <span class="c">// Verde fijo y parpadeo</span>
+  <span class="c">// Verde fijo</span>
   digitalWrite(LED_VERDE, HIGH);
   delay(<span class="n">4000</span>);
-  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i < <span class="n">3</span>; i++) {
-    digitalWrite(LED_VERDE, LOW);
-    delay(<span class="n">250</span>);
-    digitalWrite(LED_VERDE, HIGH);
-    delay(<span class="n">250</span>);
-  }
+
+  <span class="c">// Verde parpadea 3 veces (igual que en la práctica 1)</span>
+  digitalWrite(LED_VERDE, LOW);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, LOW);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, LOW);
+  delay(<span class="n">250</span>);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(<span class="n">250</span>);
   digitalWrite(LED_VERDE, LOW);
 
   <span class="c">// Amarillo</span>
@@ -813,16 +832,35 @@ td.b0 { color: var(--muted); text-align: center; }
     </div>
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 2</span><h3>Pitido intermitente, como semáforo peatonal</h3></div>
-      <p class="prose">Sustituye solo el bloque del rojo. El <code>for</code> da 8 pitidos de 200 ms con pausas de 300 ms: 8 × 500 ms = 4 segundos, el mismo tiempo que antes.</p>
+      <p class="prose">Sustituye solo el bloque del rojo. Son 4 pitidos: cada uno suena 500 ms y calla 500 ms. 4 × 1000 ms = 4 segundos, el mismo tiempo que antes.</p>
       <div class="code"><div class="code-bar"><span>bloque del rojo</span><button class="copy" type="button" data-target="p2-c2">Copiar código</button></div>
 <pre id="p2-c2">  <span class="c">// Rojo + pitidos intermitentes (4 segundos en total)</span>
   digitalWrite(LED_ROJO, HIGH);
-  <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i < <span class="n">8</span>; i++) {
-    digitalWrite(BUZZER, HIGH);
-    delay(<span class="n">200</span>);
-    digitalWrite(BUZZER, LOW);
-    delay(<span class="n">300</span>);
-  }
+
+  <span class="c">// pitido 1</span>
+  digitalWrite(BUZZER, HIGH);
+  delay(<span class="n">500</span>);
+  digitalWrite(BUZZER, LOW);
+  delay(<span class="n">500</span>);
+
+  <span class="c">// pitido 2</span>
+  digitalWrite(BUZZER, HIGH);
+  delay(<span class="n">500</span>);
+  digitalWrite(BUZZER, LOW);
+  delay(<span class="n">500</span>);
+
+  <span class="c">// pitido 3</span>
+  digitalWrite(BUZZER, HIGH);
+  delay(<span class="n">500</span>);
+  digitalWrite(BUZZER, LOW);
+  delay(<span class="n">500</span>);
+
+  <span class="c">// pitido 4</span>
+  digitalWrite(BUZZER, HIGH);
+  delay(<span class="n">500</span>);
+  digitalWrite(BUZZER, LOW);
+  delay(<span class="n">500</span>);
+
   digitalWrite(LED_ROJO, LOW);</pre></div>
       <div class="note"><strong>Si tu buzzer es pasivo:</strong> cambia <code>digitalWrite(BUZZER, HIGH)</code> por <code>tone(BUZZER, 1500)</code> y <code>digitalWrite(BUZZER, LOW)</code> por <code>noTone(BUZZER)</code>. El número 1500 es la frecuencia en hertz: súbelo para un tono más agudo.</div>
     </div>
@@ -833,7 +871,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <li><strong>Dos salidas a la vez:</strong> dos <code>digitalWrite</code> seguidos se ejecutan tan rápido que el LED y el buzzer cambian juntos.</li>
           <li><code>tone(pin, frecuencia)</code>: genera un sonido de la frecuencia indicada en un buzzer pasivo.</li>
           <li><code>noTone(pin)</code>: detiene el sonido.</li>
-          <li><strong>Calcular tiempos:</strong> (sonido + pausa) × repeticiones = duración total.</li>
+          <li><strong>Calcular tiempos:</strong> (sonido + pausa) × número de pitidos = duración total.</li>
         </ul>
       </div>
       <div class="prose">
@@ -853,7 +891,7 @@ td.b0 { color: var(--muted); text-align: center; }
         <tr><td>Solo hace «clic»</td><td>Es un buzzer pasivo</td><td>Usa <code>tone()</code> y <code>noTone()</code>.</td></tr>
         <tr><td>Suena todo el tiempo</td><td>Falta el <code>LOW</code> del buzzer</td><td>Apágalo después del <code>delay</code> del rojo.</td></tr>
         <tr><td>Suena con el LED equivocado</td><td>Instrucción en otro bloque</td><td>Las líneas del buzzer deben estar dentro del bloque del rojo.</td></tr>
-        <tr><td>El rojo dura más que antes</td><td>Tiempos mal sumados</td><td>Revisa que (sonido + pausa) × repeticiones = 4000 ms.</td></tr>
+        <tr><td>El rojo dura más que antes</td><td>Tiempos mal sumados</td><td>Revisa que (sonido + pausa) × número de pitidos = 4000 ms.</td></tr>
       </tbody>
     </table></div>
   </div></section>
@@ -1017,7 +1055,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <tr><td><code>digitalWrite(pin, HIGH)</code></td><td>Enciende el LED o el buzzer</td><td><code>digitalWrite(LED_ROJO, HIGH);</code></td></tr>
           <tr><td><code>digitalWrite(pin, LOW)</code></td><td>Lo apaga</td><td><code>digitalWrite(BUZZER, LOW);</code></td></tr>
           <tr><td><code>delay(ms)</code></td><td>Espera esos milisegundos</td><td><code>delay(250);</code></td></tr>
-          <tr><td><code>for</code></td><td>Repite un bloque varias veces</td><td><code>for (int i = 0; i &lt; 4; i++) { … }</code></td></tr>
+          <tr><td>Copiar y pegar</td><td>Repite un bloque varias veces: escríbelo una vez, pruébalo y luego cópialo</td><td>Selecciona el bloque, <kbd>Ctrl</kbd> + <kbd>C</kbd> y <kbd>Ctrl</kbd> + <kbd>V</kbd></td></tr>
           <tr><td>Función propia</td><td>Agrupa instrucciones con un nombre; se escribe fuera de <code>loop()</code></td><td><code>void senal(int ms) { … }</code></td></tr>
         </tbody>
       </table>
@@ -1047,12 +1085,12 @@ td.b0 { color: var(--muted); text-align: center; }
       <div class="tl"><span class="t">0:10 – 0:20</span><p>Cada equipo revisa su circuito de la práctica 2 y sube la plantilla. La prueba de lámparas confirma que todo conecta.</p></div>
       <div class="tl"><span class="t">0:20 – 0:30</span><p>Explicar cómo leer un diagrama de tiempos con la ronda 1 como ejemplo, en el pizarrón.</p></div>
       <div class="tl"><span class="t">0:30 – 1:05</span><p>Rondas 1 a 3. Después de cada ronda, 2 minutos para que un equipo ganador explique su código.</p></div>
-      <div class="tl"><span class="t">1:05 – 1:40</span><p>Rondas 4 a 6. Aquí aparecen el <code>for</code> y las funciones; si algún equipo se atora, da la pista en voz alta para todos.</p></div>
+      <div class="tl"><span class="t">1:05 – 1:40</span><p>Rondas 4 a 6. Aquí las secuencias son largas y conviene copiar y pegar bloques; si algún equipo se atora, da la pista en voz alta para todos.</p></div>
       <div class="tl"><span class="t">1:40 – 1:55</span><p>Ronda 7 libre si hay tiempo. Si no, déjala de tarea en TinkerCAD.</p></div>
       <div class="tl"><span class="t">1:55 – 2:00</span><p>Premiación y cierre: ¿qué ronda costó más trabajo y por qué?</p></div>
     </div>
     <div class="note tip" style="margin-top:18px"><strong>Para calificar rápido:</strong> pon el simulador de la ronda a correr junto al circuito del equipo. Si en tres ciclos seguidos coinciden luces y pitidos, la ronda es válida. Una diferencia menor a 100 ms no se nota a simple vista: no la penalices.</div>
-    <div class="note" style="margin-top:12px">Si quieres usar menos tiempo, quédate con las rondas 1, 3, 4 y 5. Cubren encender y apagar, sincronizar LED con buzzer, secuencias largas y <code>for</code>.</div>
+    <div class="note" style="margin-top:12px">Si quieres usar menos tiempo, quédate con las rondas 1, 3, 4 y 5. Cubren encender y apagar, sincronizar LED con buzzer, secuencias largas y bloques que se repiten.</div>
   </div></section>
 
   <div class="wrap pnav"><a href="#p2"><small>Anterior</small>← Práctica 2 · Semáforo sonoro</a><a class="r" href="#p4"><small>Siguiente</small>Práctica 4 · Sensor de reversa →</a></div>
@@ -2016,10 +2054,10 @@ void loop() {
     p2.timers.forEach(clearTimeout); p2.timers = [];
     if (!on) { p2set(false); p2txt.textContent = 'Buzzer: en silencio'; return; }
     if (p2.mode === 'c') { p2set(true); p2txt.textContent = 'Buzzer: sonido continuo (4 s)'; return; }
-    p2txt.textContent = 'Buzzer: 8 pitidos (200 ms on / 300 ms off)';
-    for (var i = 0; i < 8; i++) {
-      p2.timers.push(setTimeout(function () { p2set(true); }, i * 500));
-      p2.timers.push(setTimeout(function () { p2set(false); }, i * 500 + 200));
+    p2txt.textContent = 'Buzzer: 4 pitidos (500 ms suena / 500 ms calla)';
+    for (var i = 0; i < 4; i++) {
+      p2.timers.push(setTimeout(function () { p2set(true); }, i * 1000));
+      p2.timers.push(setTimeout(function () { p2set(false); }, i * 1000 + 500));
     }
   }
   trafficSim('p2', { buzzer: true, onRed: p2red });
@@ -2115,14 +2153,16 @@ void loop() {
       sol: 'void loop() {\n  // 3...\n  digitalWrite(LED_ROJO, HIGH);\n  digitalWrite(BUZZER, HIGH);\n  delay(200);\n  digitalWrite(BUZZER, LOW);\n  delay(800);\n  digitalWrite(LED_ROJO, LOW);\n\n  // 2...\n  digitalWrite(LED_AMARILLO, HIGH);\n  digitalWrite(BUZZER, HIGH);\n  delay(200);\n  digitalWrite(BUZZER, LOW);\n  delay(800);\n  digitalWrite(LED_AMARILLO, LOW);\n\n  // ¡Arranca!\n  digitalWrite(LED_VERDE, HIGH);\n  digitalWrite(BUZZER, HIGH);\n  delay(1000);                 // pitido largo\n  digitalWrite(BUZZER, LOW);\n  delay(2000);\n  digitalWrite(LED_VERDE, LOW);\n}' },
     { lvl: 'Reto', min: 12, title: 'Alarma de evacuación',
       story: 'Se detectó una fuga. Rojo y amarillo se alternan muy rápido 4 veces y la sirena suena junto con el rojo. Luego una pausa corta y se repite.',
-      hint: 'Mira cuántas veces se repite el par rojo-amarillo. En vez de escribir 4 veces lo mismo, usa un ciclo for.',
+      hint: 'Mira cuántas veces se repite el par rojo-amarillo. Escribe un par completo, revisa que funcione y luego cópialo y pégalo hasta tener los 4.',
       steps: rep(4, [S('rb', 250), S('y', 250)]).concat([S('', 500)]),
-      sol: 'void loop() {\n  for (int i = 0; i < 4; i++) {\n    digitalWrite(LED_ROJO, HIGH);\n    digitalWrite(BUZZER, HIGH);\n    delay(250);\n    digitalWrite(LED_ROJO, LOW);\n    digitalWrite(BUZZER, LOW);\n\n    digitalWrite(LED_AMARILLO, HIGH);\n    delay(250);\n    digitalWrite(LED_AMARILLO, LOW);\n  }\n  delay(500);\n}' },
+      sol: 'void loop() {\n' + [1, 2, 3, 4].map(function (n) {
+        return '  // par ' + n + '\n  digitalWrite(LED_ROJO, HIGH);\n  digitalWrite(BUZZER, HIGH);\n  delay(250);\n  digitalWrite(LED_ROJO, LOW);\n  digitalWrite(BUZZER, LOW);\n  digitalWrite(LED_AMARILLO, HIGH);\n  delay(250);\n  digitalWrite(LED_AMARILLO, LOW);\n';
+      }).join('\n') + '\n  delay(500);   // pausa corta antes de repetir\n}' },
     { lvl: 'Reto final', min: 12, title: 'Falla crítica: SOS',
       story: 'La máquina se detuvo y pide ayuda en código Morse: tres señales cortas (S), tres largas (O) y tres cortas (S). Rojo y buzzer siempre juntos.',
-      hint: 'Corta = 200 ms, larga = 600 ms, y siempre 200 ms apagado entre señales. Crea una función senal(duracion) fuera del loop() y llámala con for.',
+      hint: 'Corta = 200 ms, larga = 600 ms, y siempre 200 ms apagado entre señales. Son 9 señales: escríbelas en orden, una debajo de otra. Si quieres ir más rápido, crea una función senal(duracion) fuera del loop().',
       steps: sosS.concat([S('', 400)], sosO, [S('', 400)], sosS, [S('', 1200)]),
-      sol: '// Esta función va FUERA del loop(), antes o después\nvoid senal(int duracion) {\n  digitalWrite(LED_ROJO, HIGH);\n  digitalWrite(BUZZER, HIGH);\n  delay(duracion);\n  digitalWrite(LED_ROJO, LOW);\n  digitalWrite(BUZZER, LOW);\n  delay(200);\n}\n\nvoid loop() {\n  for (int i = 0; i < 3; i++) {\n    senal(200);     // S: corta\n  }\n  delay(400);\n  for (int i = 0; i < 3; i++) {\n    senal(600);     // O: larga\n  }\n  delay(400);\n  for (int i = 0; i < 3; i++) {\n    senal(200);     // S: corta\n  }\n  delay(1200);      // pausa antes de repetir\n}' }
+      sol: '// Esta función va FUERA del loop(), antes o después\nvoid senal(int duracion) {\n  digitalWrite(LED_ROJO, HIGH);\n  digitalWrite(BUZZER, HIGH);\n  delay(duracion);\n  digitalWrite(LED_ROJO, LOW);\n  digitalWrite(BUZZER, LOW);\n  delay(200);\n}\n\nvoid loop() {\n  // S: tres cortas\n  senal(200);\n  senal(200);\n  senal(200);\n  delay(400);\n\n  // O: tres largas\n  senal(600);\n  senal(600);\n  senal(600);\n  delay(400);\n\n  // S: tres cortas\n  senal(200);\n  senal(200);\n  senal(200);\n  delay(1200);      // pausa antes de repetir\n}' }
   ];
 
   function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
