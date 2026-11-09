@@ -421,7 +421,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <span class="card-num">PRÁCTICA 5</span>
           <h2>Display con servos</h2>
           <p>Aprendemos a controlar un servomotor y luego usamos siete para formar un display mecánico que muestra los números del 0 al 9.</p>
-          <div class="tags"><span class="tag">Servo.h</span><span class="tag">write()</span><span class="tag">funciones</span><span class="tag">for</span></div>
+          <div class="tags"><span class="tag">Servo.h</span><span class="tag">write()</span><span class="tag">funciones</span><span class="tag">ángulos</span></div>
           <div class="card-go"><span>Ver práctica →</span><span>2 × 2 h</span></div>
         </div>
       </a>
@@ -1677,22 +1677,31 @@ void loop() {
     </div>
 
     <div class="stage">
-      <div class="stage-h"><span class="lvl">Etapa 2</span><h3>Movimiento suave con <code>for</code></h3></div>
-      <p class="prose">Con <code>write(180)</code> el servo salta a toda velocidad. Si le pedimos los ángulos de uno en uno, con una pausa corta entre cada uno, se mueve despacio. Cambia solo el <code>loop()</code>:</p>
-      <div class="code"><div class="code-bar"><span>etapa2_barrido.ino · loop()</span><button class="copy" type="button" data-target="p5-c2">Copiar código</button></div>
+      <div class="stage-h"><span class="lvl">Etapa 2</span><h3>Movimiento por pasos</h3></div>
+      <p class="prose">Con <code>write(180)</code> el servo salta de golpe, a toda velocidad. Si en lugar de eso le pedimos el camino <strong>en pasos pequeños</strong>, con una pausa entre cada uno, se mueve más despacio. Cambia solo el <code>loop()</code>:</p>
+      <div class="code"><div class="code-bar"><span>etapa2_pasos.ino · loop()</span><button class="copy" type="button" data-target="p5-c2">Copiar código</button></div>
 <pre id="p5-c2" data-hl>void loop() {
-  // de 0 a 180, un grado a la vez
-  for (int angulo = 0; angulo &lt;= 180; angulo++) {
-    miServo.write(angulo);
-    delay(15);          // más grande = más lento
-  }
-  // de regreso, de 180 a 0
-  for (int angulo = 180; angulo &gt;= 0; angulo--) {
-    miServo.write(angulo);
-    delay(15);
-  }
+  // de ida: de 0 a 180 en pasos de 30 grados
+  miServo.write(0);
+  delay(300);
+  miServo.write(30);
+  delay(300);
+  miServo.write(60);
+  delay(300);
+  miServo.write(90);
+  delay(300);
+  miServo.write(120);
+  delay(300);
+  miServo.write(150);
+  delay(300);
+  miServo.write(180);
+  delay(1000);       // pausa larga al llegar
+
+  // de regreso: de 180 a 0 de un solo salto
+  miServo.write(0);
+  delay(1000);
 }</pre></div>
-      <p class="prose">Son 181 pasos de 15 ms: cada recorrido tarda unos 2.7 segundos. ¿Cuánto tardaría con <code>delay(5)</code>?</p>
+      <p class="prose">Observa la diferencia: de ida el brazo avanza poco a poco; de regreso salta de golpe. Prueba cambiar los <code>delay(300)</code> por <code>delay(100)</code>. ¿Qué pasa con la velocidad?</p>
     </div>
 
     <div class="stage">
@@ -1893,7 +1902,7 @@ void loop() {
     <h3>Sesión 1 · El servo y la construcción</h3>
     <div class="timeline">
       <div class="tl"><span class="t">0:00 – 0:15</span><p>Pregunta detonadora: ¿cómo sabe la pluma del estacionamiento hasta dónde subir? Mostrar el explorador del servo y la relación entre ángulo y pulso.</p></div>
-      <div class="tl"><span class="t">0:15 – 0:45</span><p>Etapas 1 y 2 con un solo servo conectado al Arduino. Comparar <code>write()</code> directo contra el barrido con <code>for</code>.</p></div>
+      <div class="tl"><span class="t">0:15 – 0:45</span><p>Etapas 1 y 2 con un solo servo conectado al Arduino. Comparar el salto directo contra el movimiento por pasos.</p></div>
       <div class="tl"><span class="t">0:45 – 1:35</span><p>Construcción del display: tablero, tiras y máscara. Probar la posición de los servos antes de pegar.</p></div>
       <div class="tl"><span class="t">1:35 – 2:00</span><p>Cableado con fuente externa. <strong>Revisión del docente antes de conectar la fuente.</strong> Etapa 3: alinear los brazos.</p></div>
     </div>
