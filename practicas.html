@@ -53,6 +53,7 @@ h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); font-weight: 800; letter-spacing: 
 h3 { font-size: 1.15rem; font-weight: 700; }
 p { margin: 0; }
 .prose { max-width: 66ch; display: grid; gap: 14px; }
+p.prose { display: block; }
 code { font-family: var(--f-mono); font-size: 0.88em; background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
 :focus-visible { outline: 3px solid var(--copper); outline-offset: 2px; }
 svg text { font-family: var(--f-mono); }
@@ -1656,7 +1657,30 @@ td.b0 { color: var(--muted); text-align: center; }
         </table>
       </div>
     </div>
-    <div class="figure" style="margin-top:24px">
+    <h3 style="margin-top:32px">Paso 1 · Un solo servo (etapas 1 y 2)</h3>
+    <div class="figure" id="p5-fig1" style="margin-top:14px">
+      <svg viewBox="0 0 600 280" role="img" aria-label="Diagrama de conexión de un solo servo al Arduino">
+        <rect x="20" y="40" width="150" height="220" rx="10" fill="var(--accent)" opacity="0.9"/>
+        <text x="44" y="30" font-size="13" fill="var(--fg)" font-weight="600">Arduino UNO</text>
+        <g font-size="12" fill="var(--bg)" font-weight="600" text-anchor="end"><text x="160" y="94">GND</text><text x="160" y="124">5V</text><text x="160" y="204">2</text></g>
+        <text x="34" y="248" font-size="10" fill="var(--bg)">USB a la compu</text>
+        <path d="M170 90 H320 V130 H400" stroke="#8a5a3c" stroke-width="3" fill="none"/>
+        <path d="M170 120 H300 V145 H400" stroke="var(--led-r)" stroke-width="3" fill="none"/>
+        <path d="M170 200 H340 V160 H400" stroke="#f08c2e" stroke-width="3" fill="none"/>
+        <g font-size="11" fill="var(--muted)"><text x="180" y="84">café</text><text x="180" y="114">rojo</text><text x="180" y="194">naranja (señal)</text></g>
+        <rect x="388" y="136" width="174" height="18" rx="3" fill="var(--accent)" opacity="0.6"/>
+        <rect x="400" y="105" width="150" height="80" rx="6" fill="var(--accent)"/>
+        <text x="412" y="178" font-size="11" fill="var(--bg)" font-weight="600">SG90</text>
+        <g stroke="var(--copper)" stroke-width="10" stroke-linecap="round" stroke-dasharray="2 8" opacity="0.6"><line x1="511" y1="145" x2="580" y2="145"/><line x1="499" y1="145" x2="430" y2="145"/></g>
+        <rect x="499" y="70" width="12" height="80" rx="6" fill="var(--copper)"/>
+        <circle cx="505" cy="145" r="9" fill="var(--fg)"/>
+        <g font-size="12" font-weight="600" text-anchor="middle"><text x="505" y="62" fill="var(--copper)">90°</text><text x="588" y="134" fill="var(--muted)">0°</text><text x="430" y="134" fill="var(--bg)">180°</text></g>
+      </svg>
+      <p class="figcap">Un servo sin nada encima se puede alimentar desde el Arduino: café a GND, rojo a 5V y naranja al pin 2. La línea punteada marca hacia dónde apunta el brazo en 0° y en 180°.</p>
+    </div>
+
+    <h3 style="margin-top:32px">Paso 2 · Los 7 servos con fuente externa (etapas 3 y 4)</h3>
+    <div class="figure" id="p5-fig2" style="margin-top:14px">
       <svg viewBox="0 0 700 330" role="img" aria-label="Diagrama de conexión de los siete servos con fuente externa">
         <rect x="20" y="40" width="140" height="270" rx="10" fill="var(--accent)" opacity="0.9"/>
         <text x="44" y="30" font-size="13" fill="var(--fg)" font-weight="600">Arduino UNO</text>
@@ -1692,6 +1716,7 @@ td.b0 { color: var(--muted); text-align: center; }
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 1</span><h3>Mover un servo a tres posiciones</h3></div>
       <p class="prose">Conecta <strong>un solo servo</strong>: naranja al pin 2, rojo al 5V y café al GND del Arduino. Un servo sin carga sí lo aguanta el USB; con más servos ya no.</p>
+      <div data-clone="p5-fig1"></div>
       <div class="code"><div class="code-bar"><span>etapa1_servo.ino</span><button class="copy" type="button" data-target="p5-c1">Copiar código</button></div>
 <pre id="p5-c1" data-hl>#include &lt;Servo.h&gt;     // librería para servos (ya viene con el IDE)
 
@@ -1745,6 +1770,8 @@ void loop() {
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 3</span><h3>Siete servos: alinear los brazos</h3></div>
       <p class="prose">Conecta los 7 servos con la fuente externa, todavía <strong>sin los brazos puestos</strong>. Este programa crea un servo para cada segmento (<code>segA</code>, <code>segB</code>…) y los manda a todos al ángulo que escribas en <code>ANGULO</code>.</p>
+      <div data-clone="p5-fig2"></div>
+      <div class="note warn"><strong>Antes de conectar la fuente:</strong> pide al docente que revise el cableado. Los cables rojos de los servos van al riel + de la fuente, nunca al 5V del Arduino.</div>
       <div class="code"><div class="code-bar"><span>etapa3_alinear.ino</span><button class="copy" type="button" data-target="p5-c3">Copiar código</button></div>
 <pre id="p5-c3" data-hl>#include &lt;Servo.h&gt;
 
@@ -2342,6 +2369,15 @@ void loop() {
     el5('rect', { x: sx, y: 150, width: 40, height: 30, rx: 4, fill: 'var(--accent)' }, wiring);
     var t = el5('text', { x: sx + 20, y: 170, 'font-size': 13, 'text-anchor': 'middle', fill: 'var(--bg)', 'font-weight': 600 }, wiring);
     t.textContent = n;
+  });
+
+  // Repite los diagramas de conexión dentro de las etapas del código
+  document.querySelectorAll('[data-clone]').forEach(function (slot) {
+    var copy = document.getElementById(slot.getAttribute('data-clone')).cloneNode(true);
+    copy.removeAttribute('id');
+    copy.querySelectorAll('[id]').forEach(function (n) { n.removeAttribute('id'); });
+    copy.style.marginTop = '0';
+    slot.replaceWith(copy);
   });
 
   // Tabla de dígitos
