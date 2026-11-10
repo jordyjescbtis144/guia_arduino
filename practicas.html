@@ -422,7 +422,7 @@ td.b0 { color: var(--muted); text-align: center; }
         <div class="card-body">
           <span class="card-num">PRÁCTICA 5</span>
           <h2>Pluma de estacionamiento</h2>
-          <p>Al sensor de reversa le agregamos un servomotor: cuando llega un carro, la pluma sube, da verde unos segundos y vuelve a bajar.</p>
+          <p>Usamos el sensor ultrasónico de costado para detectar un carro: se prende el amarillo, luego el verde y un servomotor levanta la pluma.</p>
           <div class="tags"><span class="tag">Servo.h</span><span class="tag">write()</span><span class="tag">HC-SR04</span><span class="tag">if</span></div>
           <div class="card-go"><span>Ver práctica →</span><span>2 h</span></div>
         </div>
@@ -1492,38 +1492,37 @@ td.b0 { color: var(--muted); text-align: center; }
   <header class="hero"><div class="wrap">
     <div class="eyebrow">Práctica 5 · Actuadores</div>
     <h1>Pluma de <span>estacionamiento</span></h1>
-    <p class="lead">Al sensor de reversa le agregamos un <strong>servomotor</strong>. Cuando llega un carro, la pluma se levanta, el semáforo da verde unos segundos y después la pluma baja otra vez, igual que en la entrada de una plaza comercial.</p>
+    <p class="lead">Reutilizamos el circuito del sensor de reversa, pero ahora el sensor va <strong>de costado</strong> para detectar cuando llega un carro. Al detectarlo, el semáforo da amarillo un segundo, luego verde, y un <strong>servomotor</strong> levanta la pluma, igual que en la entrada de una plaza comercial.</p>
     <div class="meta"><span class="chip">Circuito de la práctica 4</span><span class="chip">+ 1 servo SG90</span><span class="chip">Palito de paleta</span><span class="chip">Sesión de 2 horas</span></div>
   </div></header>
 
   <section class="block" id="p5-sim"><div class="wrap">
     <div class="sec-head"><span class="sec-num">01</span><h2>Así debe funcionar</h2></div>
-    <div class="prose"><p>Mueve el control para acercar el carro. Cuando está a <strong>menos de 15 cm</strong>, la pluma sube, el semáforo da verde 3 segundos y después avisa con pitidos y la pluma baja. Fíjate en algo importante: mientras pasa todo eso, el Arduino <strong>no está midiendo</strong>, porque está esperando en los <code>delay()</code>.</p></div>
+    <div class="prose"><p>Mueve el control para que el carro avance. El sensor está <strong>de costado</strong>, mirando hacia el carril: cuando el carro pasa frente a él, mide menos de 15 cm. Entonces se prende el <strong>amarillo 1 segundo</strong>, después el <strong>verde</strong> y la pluma sube. A los 3 segundos avisa con pitidos y la pluma baja. Mientras pasa todo eso, el Arduino <strong>no está midiendo</strong>, porque está esperando en los <code>delay()</code>.</p></div>
     <div class="sim">
       <div class="sim-top"><h3>Simulador de la pluma</h3><div class="btns"><button class="btn" id="p5-sound" type="button" aria-pressed="false">Activar sonido</button></div></div>
       <div class="scene">
-        <svg viewBox="0 0 640 200" aria-label="Vista desde arriba: un carro se acerca a la pluma de estacionamiento">
+        <svg viewBox="0 0 640 210" aria-label="Vista desde arriba: el carro pasa frente al sensor, que está de costado, antes de llegar a la pluma">
           <defs><pattern id="p5-stripes" width="12" height="24" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#f4f4f4"/><rect y="12" width="12" height="12" fill="#e5483b"/></pattern></defs>
-          <rect x="0" y="0" width="640" height="200" fill="var(--surface-2)"/>
+          <rect x="0" y="0" width="640" height="210" fill="var(--surface-2)"/>
           <rect x="0" y="40" width="640" height="120" fill="var(--road)"/>
-          <rect x="387" y="40" width="105" height="120" fill="var(--copper)" opacity="0.1"/>
-          <g id="p5-rticks"></g>
-          <g id="p5-waves" fill="none" stroke="var(--accent)" stroke-width="2"></g>
+          <line id="p5-beam" x1="400" x2="400" y1="162" y2="42" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 5" opacity="0.5"/>
           <g id="p5-car">
             <rect x="0" y="0" width="110" height="56" rx="14" fill="var(--accent)"/>
             <rect x="70" y="7" width="16" height="42" rx="4" fill="var(--bg)" opacity="0.75"/>
             <rect x="12" y="9" width="12" height="38" rx="4" fill="var(--bg)" opacity="0.75"/>
             <rect x="105" y="6" width="5" height="9" rx="2" fill="var(--led-y)"/><rect x="105" y="41" width="5" height="9" rx="2" fill="var(--led-y)"/>
           </g>
-          <rect x="492" y="86" width="12" height="28" rx="2" fill="var(--accent)"/>
-          <circle cx="492" cy="93" r="4" fill="var(--hole)" stroke="var(--fg)"/><circle cx="492" cy="107" r="4" fill="var(--hole)" stroke="var(--fg)"/>
-          <text x="510" y="104" font-size="10" fill="var(--muted)">sensor</text>
+          <rect x="386" y="164" width="28" height="14" rx="2" fill="var(--accent)"/>
+          <circle cx="393" cy="164" r="4" fill="var(--hole)" stroke="var(--fg)"/><circle cx="407" cy="164" r="4" fill="var(--hole)" stroke="var(--fg)"/>
+          <text x="400" y="198" font-size="11" text-anchor="middle" fill="var(--muted)">sensor de costado</text>
           <rect id="p5-arm" x="466" y="26" width="10" height="140" rx="3" fill="url(#p5-stripes)" stroke="var(--pole)" stroke-width="1" style="transform-box:fill-box;transform-origin:5px 0px"/>
           <circle cx="471" cy="26" r="9" fill="var(--pole)"/>
           <text x="420" y="18" font-size="10" fill="var(--muted)">servo</text>
+          <text x="10" y="28" font-size="10" fill="var(--muted)">el carro avanza →</text>
         </svg>
       </div>
-      <div class="sim-ctrl"><label for="p5-carro">Distancia del carro al sensor (cm)</label><input id="p5-carro" type="range" min="5" max="60" value="45"></div>
+      <div class="sim-ctrl"><label for="p5-carro">Avanza el carro</label><input id="p5-carro" type="range" min="0" max="100" value="15"></div>
       <div class="panel">
         <div class="leds" aria-label="Semáforo"><div class="led r" id="p5-lr" title="Rojo"></div><div class="led y" id="p5-ly" title="Amarillo"></div><div class="led g" id="p5-lg" title="Verde"></div></div>
         <div class="serial" id="p5-serial">Distancia: 45 cm</div>
@@ -1671,7 +1670,8 @@ td.b0 { color: var(--muted); text-align: center; }
       <li>Ponle al servo el <strong>brazo largo de una punta</strong> (viene en la bolsita del servo).</li>
       <li>Pega un palito de paleta al brazo con cinta o silicón. Si quieres, píntale franjas rojas y blancas.</li>
       <li>Pega el servo con cinta doble cara a una cajita o a la orilla de la mesa, de modo que el palito quede <strong>horizontal</strong>, como una pluma cerrada.</li>
-      <li>Coloca el sensor junto a la pluma, apuntando hacia donde llegan los carros, a la altura de tu carro de juguete o de tu caja.</li>
+      <li>Coloca el sensor <strong>de costado</strong>: a la orilla del carril, un poco antes de la pluma, con los «ojos» mirando hacia el carril (no hacia donde vienen los carros). Ponlo a la altura de tu carro de juguete o de tu caja.</li>
+      <li>Del otro lado del carril no debe haber nada a menos de 15 cm. Si hay una pared o una caja muy cerca, el sensor creerá que siempre hay un carro.</li>
       <li>Con la etapa 2 del código ajusta el brazo: en <code>ABAJO</code> el palito debe quedar horizontal. Si queda chueco, quita el brazo y ponlo un diente antes o después.</li>
     </ol>
     <div class="note tip" style="margin-top:20px"><strong>Un servo con un palito ligero sí funciona conectado al 5V del Arduino.</strong> Si el Arduino se reinicia cada vez que la pluma se mueve, el palito es muy pesado o está rozando con algo.</div>
@@ -1732,12 +1732,12 @@ void loop() {
 
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 3</span><h3>Pluma de estacionamiento completa</h3></div>
-      <p class="prose">Ahora juntamos todo. Partimos del código del sensor de reversa: las mismas constantes, el mismo <code>setup()</code> y la misma función <code>medirDistancia()</code>. Lo nuevo está en el <code>loop()</code>: si hay un carro a menos de 15 cm, se hace toda la secuencia de la pluma.</p>
+      <p class="prose">Ahora juntamos todo. Partimos del código del sensor de reversa: las mismas constantes, el mismo <code>setup()</code> y la misma función <code>medirDistancia()</code>. Lo que cambia es dónde va el sensor y el <code>loop()</code>: si un carro pasa frente al sensor (a menos de 15 cm), se hace toda la secuencia de la pluma.</p>
       <div class="code"><div class="code-bar"><span>pluma_estacionamiento.ino</span><button class="copy" type="button" data-target="p5-c3">Copiar código</button></div>
 <pre id="p5-c3" data-hl>// ===== Pluma de estacionamiento =====
 #include &lt;Servo.h&gt;
 
-const int TRIG = 9;
+const int TRIG = 9;       // sensor de costado, mirando hacia el carril
 const int ECHO = 10;
 const int LED_VERDE    = 4;
 const int LED_AMARILLO = 5;
@@ -1784,19 +1784,16 @@ void loop() {
   Serial.print(distancia);
   Serial.println(" cm");
 
-  if (distancia &lt; 15) {
-    // 1. Llegó un carro: amarillo, un pitido y la pluma sube
+  if (distancia &lt; 15) {   // hay un carro frente al sensor
+    // 1. Llegó un carro: amarillo durante 1 segundo
     digitalWrite(LED_ROJO, LOW);
     digitalWrite(LED_AMARILLO, HIGH);
-    digitalWrite(BUZZER, HIGH);
-    delay(200);
-    digitalWrite(BUZZER, LOW);
-    pluma.write(ARRIBA);
-    delay(1000);                   // tiempo para que la pluma termine de subir
+    delay(1000);
     digitalWrite(LED_AMARILLO, LOW);
 
-    // 2. Verde: el carro tiene 3 segundos para pasar
+    // 2. Verde y la pluma sube: el carro tiene 3 segundos para pasar
     digitalWrite(LED_VERDE, HIGH);
+    pluma.write(ARRIBA);
     delay(3000);
     digitalWrite(LED_VERDE, LOW);
 
@@ -1855,6 +1852,8 @@ void loop() {
         <tr><td>La pluma no queda horizontal</td><td>Brazo mal colocado</td><td>Sube la etapa 2, quita el brazo y ponlo un diente antes o después.</td></tr>
         <tr><td>Zumba cuando está abajo</td><td>Choca con su tope</td><td>Usa <code>ABAJO = 5</code> en lugar de 0.</td></tr>
         <tr><td>La pluma se abre sola</td><td>Algo está frente al sensor</td><td>Revisa en el Monitor Serie qué distancia marca y quita lo que estorbe.</td></tr>
+        <tr><td>La pluma sube y baja sin parar, aunque no haya carro</td><td>El otro lado del carril está muy cerca</td><td>Sin carro, el Monitor Serie debe marcar más de 15 cm. Aleja la pared o la caja de enfrente, o gira un poco el sensor.</td></tr>
+        <tr><td>El carro pasa y no lo detecta</td><td>El sensor no apunta al carro</td><td>Revisa que el sensor esté de costado, a la altura del carro y mirando hacia el carril.</td></tr>
         <tr><td>Nunca se abre</td><td>El sensor no mide</td><td>Revisa la práctica 4: Trig al pin 9 y Echo al 10. En el Monitor Serie debe cambiar la distancia.</td></tr>
       </tbody>
     </table></div>
@@ -1884,7 +1883,7 @@ void loop() {
       <div class="tl"><span class="t">0:00 – 0:15</span><p>Pregunta detonadora: ¿cómo sabe la pluma del estacionamiento que llegó un carro y hasta dónde subir? Mostrar el simulador de la pluma y el explorador del servo.</p></div>
       <div class="tl"><span class="t">0:15 – 0:40</span><p>Etapa 1: conectar el servo al circuito de la práctica 4 y moverlo a 0°, 90° y 180°. Diferencia entre servo y motor normal.</p></div>
       <div class="tl"><span class="t">0:40 – 1:05</span><p>Armar la pluma con el palito y subir la etapa 2 para que quede horizontal en <code>ABAJO</code>.</p></div>
-      <div class="tl"><span class="t">1:05 – 1:40</span><p>Etapa 3: juntar el sensor con la pluma. Probar con un carro de juguete o una caja. Leer la secuencia en voz alta y sumar los tiempos.</p></div>
+      <div class="tl"><span class="t">1:05 – 1:40</span><p>Etapa 3: juntar el sensor con la pluma. Colocar el sensor de costado y probar pasando un carro de juguete o una caja frente a él. Leer la secuencia en voz alta y sumar los tiempos.</p></div>
       <div class="tl"><span class="t">1:40 – 2:00</span><p>Retos fáciles, preguntas de cierre y evidencia: video de un carro entrando al estacionamiento.</p></div>
     </div>
     <div class="note tip" style="margin-top:18px">Antes de la clase prueba que los servos de los kits sean de 180° y no de 360°. Si un equipo no tiene armada la práctica 4, que la arme primero con su guía: esta práctica la necesita completa.</div>
@@ -2942,35 +2941,25 @@ void loop() {
 
   /* ---------- Práctica 5: pluma de estacionamiento ---------- */
   (function () {
-    var SX = 492, SC = 7;   // x del sensor y pixeles por centímetro
-    var ticksP = document.getElementById('p5-rticks');
-    [15, 30, 45, 60].forEach(function (cm) {
-      var x = SX - cm * SC;
-      el5('line', { x1: x, x2: x, y1: 160, y2: 168, stroke: 'var(--muted)', 'stroke-width': 1.5 }, ticksP);
-      var t = el5('text', { x: x, y: 182, 'font-size': 11, 'text-anchor': 'middle', fill: cm === 15 ? 'var(--copper)' : 'var(--muted)' }, ticksP);
-      t.textContent = cm + ' cm';
-    });
-    var zl = el5('text', { x: SX - 2, y: 196, 'font-size': 10, 'text-anchor': 'end', fill: 'var(--copper)' }, ticksP);
-    zl.textContent = 'zona de detección';
-
-    var range = document.getElementById('p5-carro'), car = document.getElementById('p5-car'), waves = document.getElementById('p5-waves');
-    var arm = document.getElementById('p5-arm');
+    var SENSOR_X = 400, STOP = 460;   // con la pluma cerrada, el carro se detiene en STOP
+    var range = document.getElementById('p5-carro'), car = document.getElementById('p5-car');
+    var arm = document.getElementById('p5-arm'), beam = document.getElementById('p5-beam');
     var L = { r: document.getElementById('p5-lr'), y: document.getElementById('p5-ly'), g: document.getElementById('p5-lg') };
     var serial = document.getElementById('p5-serial'), distOut = document.getElementById('p5-dist'), stateOut = document.getElementById('p5-state');
     var buzz = document.getElementById('p5-buzz'), buzzTxt = document.getElementById('p5-buzzTxt'), sndBtn = document.getElementById('p5-sound');
     var seqEl = document.getElementById('p5-seq');
     var STEPS = [
-      ['1. Llegó un carro: amarillo, pitido y la pluma sube', 'var(--led-y)', '1.2 s'],
-      ['2. Verde: el carro puede pasar', 'var(--led-g)', '3 s'],
+      ['1. Llegó un carro: amarillo 1 segundo', 'var(--led-y)', '1 s'],
+      ['2. Verde y la pluma sube: el carro puede pasar', 'var(--led-g)', '3 s'],
       ['3. Aviso: amarillo, 2 pitidos y la pluma baja', 'var(--led-y)', '1.8 s'],
       ['4. Rojo: pluma cerrada, el Arduino mide', 'var(--led-r)', 'cada 0.1 s']
     ];
-    var rows = STEPS.map(function (s) {
+    var rows = STEPS.map(function (st) {
       var row = document.createElement('div'); row.className = 'seq-row';
-      row.innerHTML = '<span class="sw" style="background:' + s[1] + '"></span><span>' + s[0] + '</span><span class="ms">' + s[2] + '</span>';
+      row.innerHTML = '<span class="sw" style="background:' + st[1] + '"></span><span>' + st[0] + '</span><span class="ms">' + st[2] + '</span>';
       seqEl.appendChild(row); return row;
     });
-    var busy = false, timers = [], sound = false;
+    var busy = false, open = false, timers = [], sound = false, front = 0;
     function mark(i) { rows.forEach(function (r, j) { r.classList.toggle('cur', j === i); }); }
     function lamp(c) { ['r', 'y', 'g'].forEach(function (k) { L[k].classList.toggle('on', k === c); }); }
     function beep(on) {
@@ -2978,31 +2967,33 @@ void loop() {
       buzzTxt.textContent = on ? 'Buzzer: pitido' : 'Buzzer: en silencio';
       if (!document.getElementById('v-p5').hidden) tone(on && sound);
     }
-    function armUp(up) { arm.style.transform = up ? 'rotate(-90deg)' : 'rotate(0deg)'; }
+    function armUp(up) { open = up; arm.style.transform = up ? 'rotate(-90deg)' : 'rotate(0deg)'; }
     function at(t, f) { timers.push(setTimeout(f, t)); }
     function idle() { busy = false; timers = []; mark(3); lamp('r'); beep(false); armUp(false); stateOut.textContent = 'Pluma cerrada'; }
     function start() {
       busy = true;
       serial.textContent = 'Secuencia en marcha: el Arduino no mide hasta que termine';
-      mark(0); lamp('y'); beep(true); stateOut.textContent = 'Abriendo';
-      at(200, function () { beep(false); armUp(true); });
-      at(1200, function () { mark(1); lamp('g'); stateOut.textContent = 'Puede pasar'; });
-      at(4200, function () { mark(2); lamp('y'); beep(true); stateOut.textContent = 'Cerrando'; });
-      at(4400, function () { beep(false); });
-      at(4600, function () { beep(true); });
-      at(4800, function () { beep(false); });
-      at(5000, function () { armUp(false); });
-      at(6000, function () { idle(); render(); });   // el loop() vuelve a empezar y mide otra vez
+      mark(0); lamp('y'); stateOut.textContent = 'Carro detectado';
+      at(1000, function () { mark(1); lamp('g'); armUp(true); stateOut.textContent = 'Puede pasar'; });
+      at(4000, function () { mark(2); lamp('y'); beep(true); stateOut.textContent = 'Cerrando'; });
+      at(4200, function () { beep(false); });
+      at(4400, function () { beep(true); });
+      at(4600, function () { beep(false); });
+      at(4800, function () { armUp(false); });
+      at(5800, function () { idle(); render(); });   // el loop() vuelve a empezar y mide otra vez
     }
+    // Lo que mediría el sensor: 8 cm si el carro está frente a él; si no, el otro lado del carril (28 cm)
+    function medir() { return (front - 110 <= SENSOR_X && SENSOR_X <= front) ? 8 : 28; }
     function render() {
-      var d = parseInt(range.value, 10), front = SX - d * SC;
-      car.setAttribute('transform', 'translate(' + (front - 110) + ',72)');
-      waves.innerHTML = '';
-      for (var i = 1; i <= 3; i++) {
-        var r = Math.min(d * SC, 14 * i);
-        if (r < 4) continue;
-        var p = el5('path', { d: 'M' + (SX - r * 0.5) + ' ' + (100 - r * 0.85) + ' Q' + (SX - r) + ' 100 ' + (SX - r * 0.5) + ' ' + (100 + r * 0.85), opacity: 1 - i * 0.25 }, waves);
+      var f = 40 + parseInt(range.value, 10) * 7.4;
+      if (!open && front <= STOP && f > STOP) {   // con la pluma cerrada, el carro no pasa
+        f = STOP; range.value = Math.round((STOP - 40) / 7.4);
       }
+      front = f;
+      car.setAttribute('transform', 'translate(' + (front - 110) + ',72)');
+      var d = medir();
+      beam.setAttribute('y2', d === 8 ? 128 : 42);
+      beam.setAttribute('opacity', d === 8 ? 1 : 0.5);
       distOut.textContent = d + ' cm';
       if (busy) return;
       serial.textContent = 'Distancia: ' + d + ' cm';
