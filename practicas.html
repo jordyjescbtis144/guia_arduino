@@ -423,7 +423,7 @@ td.b0 { color: var(--muted); text-align: center; }
         </div>
       </a>
 
-      <a class="card" href="#p5" data-lock>
+      <a class="card" href="#p5">
         <div class="card-art">
           <svg viewBox="0 0 200 140" aria-hidden="true"><rect x="0" y="96" width="200" height="44" fill="var(--road)"/><rect x="128" y="40" width="14" height="60" rx="3" fill="var(--pole)"/><circle cx="135" cy="44" r="10" fill="var(--accent)"/><g transform="rotate(-35 135 44)"><rect x="20" y="39" width="115" height="10" rx="3" fill="#e5483b"/><rect x="34" y="39" width="12" height="10" fill="#f4f4f4"/><rect x="58" y="39" width="12" height="10" fill="#f4f4f4"/><rect x="82" y="39" width="12" height="10" fill="#f4f4f4"/><rect x="106" y="39" width="12" height="10" fill="#f4f4f4"/></g><rect x="160" y="40" width="22" height="56" rx="6" fill="var(--pole)"/><circle cx="171" cy="52" r="6" fill="var(--lamp-off)"/><circle cx="171" cy="68" r="6" fill="var(--lamp-off)"/><circle cx="171" cy="84" r="6" fill="var(--led-g)"/><g transform="translate(12,104) scale(0.4)"><path d="M0 60 L0 34 Q2 26 12 24 L40 20 L66 2 L150 2 L188 24 L206 28 Q214 30 214 40 L214 60 Z" fill="var(--accent)"/></g></svg>
         </div>
@@ -1479,7 +1479,7 @@ td.b0 { color: var(--muted); text-align: center; }
     <div class="note tip" style="margin-top:18px">Si es la primera vez que arman circuitos físicos, deja que los equipos que terminen la etapa 1 ayuden a los que no. Si alguien se atora en el armado, puede probar primero el mismo circuito en un simulador como TinkerCAD.</div>
   </div></section>
 
-  <div class="wrap pnav"><a href="#p3"><small>Anterior</small>← Práctica 3 · Torreta Andon</a><a class="r" href="#p5" data-lock><small>Siguiente</small>Práctica 5 · Pluma de estacionamiento →</a></div>
+  <div class="wrap pnav"><a href="#p3"><small>Anterior</small>← Práctica 3 · Torreta Andon</a><a class="r" href="#p5"><small>Siguiente</small>Práctica 5 · Pluma de estacionamiento →</a></div>
 </div>
 
 <!-- =================== PRÁCTICA 5 · PLUMA DE ESTACIONAMIENTO =================== -->
@@ -2450,7 +2450,7 @@ void loop() {
   /* ---------- Prácticas bloqueadas (solo el docente las ve) ---------- */
   // Para desbloquear en un navegador: abrir practicas.html?docente=CLAVE (se recuerda en ese navegador).
   // Para volver a bloquear: practicas.html?docente=salir. En el código solo se guarda la huella SHA-256 de la clave.
-  var BLOQUEADAS = ['p5', 'p6'];
+  var BLOQUEADAS = ['p6'];
   var HUELLA = '4940d5bc919daa072222384ccf9e27638bfbff76b4f36339ac071fa7e909fd98';
   function esDocente() { try { return localStorage.getItem('docente') === '1'; } catch (e) { return false; } }
   function aplicarBloqueo() {
