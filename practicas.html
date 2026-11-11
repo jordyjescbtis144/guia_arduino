@@ -1936,7 +1936,7 @@ void loop() {
             <p class="figcap" style="margin:0 0 6px">Ángulo de cada servo</p>
             <div class="angles" id="p6-angles"></div>
           </div>
-          <div class="serial" id="p6-serial" style="white-space:normal">mostrar(SI, SI, SI, SI, SI, SI, SI);</div>
+          <div class="serial" id="p6-serial" style="white-space:normal">// número 8:  segA.write(SI); segB.write(SI); segC.write(SI); segD.write(SI); segE.write(SI); segF.write(SI); segG.write(SI);</div>
         </div>
       </div>
     </div>
@@ -2009,7 +2009,7 @@ void loop() {
       <div class="prose">
         <p>Es el mismo display de los relojes digitales y las calculadoras: <strong>siete segmentos</strong> que se nombran con letras de la <strong>a</strong> a la <strong>g</strong>, empezando arriba y girando como las manecillas del reloj. La <strong>g</strong> es la del centro.</p>
         <p>Para formar un número decides qué segmentos se ven. El 1 solo usa <strong>b</strong> y <strong>c</strong>; el 8 usa los siete.</p>
-        <p>Si escribimos <strong>SI</strong> cuando el segmento se ve y <strong>NO</strong> cuando se esconde, cada número se convierte en una fila de siete respuestas. Esa fila es justo lo que vamos a escribir en el programa.</p>
+        <p>Si escribimos <strong>SI</strong> cuando el segmento se ve y <strong>NO</strong> cuando se esconde, cada número se convierte en una fila de siete respuestas. Esa fila es justo lo que vamos a escribir en el programa, una línea por segmento.</p>
         <div class="note"><strong>Antes de ver la tabla:</strong> dibuja los números del 0 al 9 en tu cuaderno y llena tú mismo las filas. Después compara.</div>
       </div>
       <div class="figure" style="max-width:300px;justify-self:center;width:100%">
@@ -2272,7 +2272,7 @@ void loop() {
 
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 4</span><h3>El display del 0 al 9</h3></div>
-      <p class="prose">Ya con los brazos alineados, hacemos una <strong>función</strong> llamada <code>mostrar()</code> que recibe 7 valores, uno para cada segmento, en orden de la <strong>a</strong> a la <strong>g</strong>. Cada valor es <code>SI</code> (la tira se ve) o <code>NO</code> (se esconde). Así cada número queda escrito en una sola línea, igual que en la tabla de la sección 03.</p>
+      <p class="prose">Ya con los brazos alineados, formamos cada número dentro del <code>loop()</code>. Cada número es un <strong>bloque de 7 líneas</strong>, una para cada segmento, en orden de la <strong>a</strong> a la <strong>g</strong>: <code>segA.write(SI);</code> si la tira se ve o <code>segA.write(NO);</code> si se esconde. Es la misma fila de la tabla de la sección 03, escrita hacia abajo.</p>
       <div class="code"><div class="code-bar"><span>display_servos.ino</span><button class="copy" type="button" data-target="p6-c4">Copiar código</button></div>
 <pre id="p6-c4" data-hl>// ===== Display de 7 segmentos con servos =====
 #include &lt;Servo.h&gt;
@@ -2300,48 +2300,108 @@ void setup() {
   segG.attach(8);
 }
 
-// Mueve los 7 servos. Recibe SI o NO para cada segmento: a, b, c, d, e, f, g
-void mostrar(int a, int b, int c, int d, int e, int f, int g) {
-  segA.write(a);
-  delay(60);
-  segB.write(b);
-  delay(60);
-  segC.write(c);
-  delay(60);
-  segD.write(d);
-  delay(60);
-  segE.write(e);
-  delay(60);
-  segF.write(f);
-  delay(60);
-  segG.write(g);
-  delay(60);
-}
-
 void loop() {
-  //      a   b   c   d   e   f   g
-  mostrar(SI, SI, SI, SI, SI, SI, NO);   // número 0
+  // ----- número 0 -----
+  segA.write(SI);
+  segB.write(SI);
+  segC.write(SI);
+  segD.write(SI);
+  segE.write(SI);
+  segF.write(SI);
+  segG.write(NO);
+  delay(1500);       // se queda a la vista un segundo y medio
+
+  // ----- número 1 -----
+  segA.write(NO);
+  segB.write(SI);
+  segC.write(SI);
+  segD.write(NO);
+  segE.write(NO);
+  segF.write(NO);
+  segG.write(NO);
   delay(1500);
-  mostrar(NO, SI, SI, NO, NO, NO, NO);   // número 1
+
+  // ----- número 2 -----
+  segA.write(SI);
+  segB.write(SI);
+  segC.write(NO);
+  segD.write(SI);
+  segE.write(SI);
+  segF.write(NO);
+  segG.write(SI);
   delay(1500);
-  mostrar(SI, SI, NO, SI, SI, NO, SI);   // número 2
+
+  // ----- número 3 -----
+  segA.write(SI);
+  segB.write(SI);
+  segC.write(SI);
+  segD.write(SI);
+  segE.write(NO);
+  segF.write(NO);
+  segG.write(SI);
   delay(1500);
-  mostrar(SI, SI, SI, SI, NO, NO, SI);   // número 3
+
+  // ----- número 4 -----
+  segA.write(NO);
+  segB.write(SI);
+  segC.write(SI);
+  segD.write(NO);
+  segE.write(NO);
+  segF.write(SI);
+  segG.write(SI);
   delay(1500);
-  mostrar(NO, SI, SI, NO, NO, SI, SI);   // número 4
+
+  // ----- número 5 -----
+  segA.write(SI);
+  segB.write(NO);
+  segC.write(SI);
+  segD.write(SI);
+  segE.write(NO);
+  segF.write(SI);
+  segG.write(SI);
   delay(1500);
-  mostrar(SI, NO, SI, SI, NO, SI, SI);   // número 5
+
+  // ----- número 6 -----
+  segA.write(SI);
+  segB.write(NO);
+  segC.write(SI);
+  segD.write(SI);
+  segE.write(SI);
+  segF.write(SI);
+  segG.write(SI);
   delay(1500);
-  mostrar(SI, NO, SI, SI, SI, SI, SI);   // número 6
+
+  // ----- número 7 -----
+  segA.write(SI);
+  segB.write(SI);
+  segC.write(SI);
+  segD.write(NO);
+  segE.write(NO);
+  segF.write(NO);
+  segG.write(NO);
   delay(1500);
-  mostrar(SI, SI, SI, NO, NO, NO, NO);   // número 7
+
+  // ----- número 8 -----
+  segA.write(SI);
+  segB.write(SI);
+  segC.write(SI);
+  segD.write(SI);
+  segE.write(SI);
+  segF.write(SI);
+  segG.write(SI);
   delay(1500);
-  mostrar(SI, SI, SI, SI, SI, SI, SI);   // número 8
-  delay(1500);
-  mostrar(SI, SI, SI, SI, NO, SI, SI);   // número 9
+
+  // ----- número 9 -----
+  segA.write(SI);
+  segB.write(SI);
+  segC.write(SI);
+  segD.write(SI);
+  segE.write(NO);
+  segF.write(SI);
+  segG.write(SI);
   delay(1500);
 }</pre></div>
-      <div class="note tip"><strong>Escríbelo por partes:</strong> primero solo el 0 y el 1 en el <code>loop()</code>. Cuando funcionen, agrega los demás números de uno en uno.</div>
+      <div class="note tip"><strong>Escríbelo por partes:</strong> primero solo el 0 y el 1 en el <code>loop()</code>. Cuando funcionen, copia un bloque, pégalo abajo y cambia sus <code>SI</code> y <code>NO</code> para el siguiente número.</div>
     </div>
 
     <div class="two">
@@ -2352,13 +2412,13 @@ void loop() {
           <li><code>Servo segA;</code> crea un servo llamado <code>segA</code>. Hicimos siete, uno por segmento.</li>
           <li><code>attach(2)</code> le dice al servo en qué pin está su cable de señal.</li>
           <li><code>write(90)</code> lo mueve a 90 grados.</li>
-          <li>Una <strong>función</strong> que recibe 7 valores: escribimos una sola vez cómo se mueven los 7 servos y después solo le pasamos los datos de cada número.</li>
+          <li><code>SI</code> y <code>NO</code> son <strong>constantes</strong>: nombres que les pusimos a los ángulos 90 y 0 para que el programa se lea más fácil.</li>
         </ul>
       </div>
       <div class="prose">
-        <h3>Cómo se lee una línea</h3>
-        <p><code>mostrar(SI, SI, SI, NO, NO, NO, NO);</code></p>
-        <p>Los valores van en orden: a = <code>SI</code>, b = <code>SI</code>, c = <code>SI</code>, y d, e, f y g = <code>NO</code>. Se ven a, b y c: es un <strong>7</strong>.</p>
+        <h3>Cómo se lee un número</h3>
+        <p>Cada número es un bloque de 7 líneas y un <code>delay(1500)</code> al final para que se quede a la vista.</p>
+        <p>Si en un bloque <code>segA</code>, <code>segB</code> y <code>segC</code> llevan <code>SI</code>, y <code>segD</code>, <code>segE</code>, <code>segF</code> y <code>segG</code> llevan <code>NO</code>, se ven a, b y c: es un <strong>7</strong>.</p>
         <p>¿Por qué <code>SI</code> y <code>NO</code> en lugar de 90 y 0? Porque se lee más fácil. Y si tus servos se ven mejor con 85°, solo cambias la línea <code>const int SI = 85;</code> y se arreglan todos los números.</p>
       </div>
     </div>
@@ -2376,8 +2436,9 @@ void loop() {
         <tr><td>Error <code>'Servo' does not name a type</code></td><td>Falta la librería</td><td>La primera línea debe ser <code>#include &lt;Servo.h&gt;</code>.</td></tr>
         <tr><td>Se mueve el segmento equivocado</td><td>Cables de señal cruzados</td><td>El orden es a→2, b→3, c→4, d→5, e→6, f→7, g→8. Revisa los cables y las líneas <code>attach()</code>.</td></tr>
         <tr><td>Una tira no entra completa en su ventana</td><td>Brazo mal alineado</td><td>Repite la etapa 3 y recoloca el brazo un diente.</td></tr>
-        <tr><td>Un número se forma mal</td><td>Error en su línea <code>mostrar()</code></td><td>Compara esa línea con la tabla de la sección 03. Deben ser 7 valores, en orden de la a a la g.</td></tr>
-        <tr><td>Error <code>too few arguments</code></td><td>A un <code>mostrar()</code> le faltan valores</td><td>Cuenta los valores: siempre son 7, separados por comas.</td></tr>
+        <tr><td>Un número se forma mal</td><td>Un <code>SI</code> o un <code>NO</code> equivocado en su bloque</td><td>Compara las 7 líneas de ese número con la tabla de la sección 03, en orden de la a a la g.</td></tr>
+        <tr><td>Un segmento se queda como estaba en el número anterior</td><td>A ese número le falta una línea</td><td>Cuenta las líneas del bloque: siempre son 7, de <code>segA</code> a <code>segG</code>.</td></tr>
+        <tr><td>Los servos tiemblan solo al cambiar de número</td><td>Varios servos arrancan al mismo tiempo</td><td>Agrega un <code>delay(60);</code> después de cada <code>write()</code> para que se muevan uno por uno, como en la etapa 3.</td></tr>
       </tbody>
     </table></div>
   </div></section>
@@ -2385,10 +2446,10 @@ void loop() {
   <section class="block" id="p6-ret"><div class="wrap">
     <div class="sec-head"><span class="sec-num">07</span><h2>Retos</h2></div>
     <div class="challenges">
-      <div class="ch"><span class="lvl">Fácil</span><p>Cuenta regresiva para un despegue: del 9 al 0. Solo tienes que cambiar el orden de las líneas del <code>loop()</code>.</p></div>
+      <div class="ch"><span class="lvl">Fácil</span><p>Cuenta regresiva para un despegue: del 9 al 0. Solo tienes que cambiar el orden de los bloques de números en el <code>loop()</code>.</p></div>
       <div class="ch"><span class="lvl">Fácil</span><p>Baja los <code>delay(1500)</code> a 300 ms. ¿Alcanzan los servos a formar cada número? ¿Cuál es el tiempo más corto que funciona bien?</p></div>
       <div class="ch"><span class="lvl">Fácil</span><p>Muestra tu número de lista, un dígito después de otro. Ejemplo para el 27: un 2, pausa, un 7, pausa larga.</p></div>
-      <div class="ch"><span class="lvl">Medio</span><p>Forma las letras <strong>A, C, E, F, H</strong> y <strong>L</strong> con <code>mostrar()</code>. Dibújalas primero en tu cuaderno para saber qué segmentos llevan <code>SI</code>.</p></div>
+      <div class="ch"><span class="lvl">Medio</span><p>Forma las letras <strong>A, C, E, F, H</strong> y <strong>L</strong>, cada una con su bloque de 7 líneas. Dibújalas primero en tu cuaderno para saber qué segmentos llevan <code>SI</code>.</p></div>
       <div class="ch"><span class="lvl">Medio</span><p>Si una tira no queda derecha, prueba con otros ángulos: cambia <code>SI = 90</code> por 85 o 95 hasta que se vea bien.</p></div>
       <div class="ch"><span class="lvl">Reto</span><p>Une esta práctica con la 4: con el sensor HC-SR04, muestra un <strong>3</strong> si el obstáculo está lejos, un <strong>2</strong> si está a media distancia y un <strong>1</strong> si está cerca. Usa <code>if / else if / else</code> igual que en el sensor de reversa.</p></div>
     </div>
@@ -2396,8 +2457,8 @@ void loop() {
     <ol class="qs">
       <li>¿En qué se diferencia un servomotor de un motor normal?</li>
       <li>¿Por qué no se pueden alimentar los 7 servos desde el pin 5V del Arduino? Haz la cuenta de la corriente.</li>
-      <li>Escribe la línea <code>mostrar(...)</code> para el número 4.</li>
-      <li>¿Qué número forma <code>mostrar(SI, NO, SI, SI, NO, SI, SI);</code>?</li>
+      <li>Escribe las 7 líneas que forman el número 4.</li>
+      <li>¿Qué número se forma si a = <code>SI</code>, b = <code>NO</code>, c = <code>SI</code>, d = <code>SI</code>, e = <code>NO</code>, f = <code>SI</code> y g = <code>SI</code>?</li>
       <li>¿Dónde se usan servomotores en la vida diaria o en la industria? (Ejemplos: plumas de estacionamiento, brazos robóticos, válvulas, timones de aviones a escala.)</li>
     </ol>
   </div></section>
@@ -2414,7 +2475,7 @@ void loop() {
     <h3 style="margin-top:28px">Sesión 2 · Programar el display</h3>
     <div class="timeline">
       <div class="tl"><span class="t">0:00 – 0:20</span><p>En papel, cada equipo llena la tabla de SI y NO del 0 al 9 antes de verla en la guía. Se compara en el pizarrón.</p></div>
-      <div class="tl"><span class="t">0:20 – 1:00</span><p>Etapa 4: la función <code>mostrar()</code> con sus 7 valores. Primero solo el 0 y el 1; después el resto de los números.</p></div>
+      <div class="tl"><span class="t">0:20 – 1:00</span><p>Etapa 4: cada número como un bloque de 7 líneas en el <code>loop()</code>. Primero solo el 0 y el 1; después el resto de los números.</p></div>
       <div class="tl"><span class="t">1:00 – 1:40</span><p>Ajuste fino de las tiras y retos fáciles y medios.</p></div>
       <div class="tl"><span class="t">1:40 – 2:00</span><p>Demostración por equipos (el display cuenta del 0 al 9), preguntas de cierre y evidencia en video.</p></div>
     </div>
@@ -2934,11 +2995,10 @@ void loop() {
     padBtns.forEach(function (b, i) { b.setAttribute('aria-pressed', i === n ? 'true' : 'false'); });
     var vals = [];
     DIG[n].split('').forEach(function (bit, i) {
-      vals.push(bit === '1' ? 'SI' : 'NO');
-      if (instant) setSeg(i, bit === '1');
-      else segTimers.push(setTimeout(function () { setSeg(i, bit === '1'); }, i * 60)); // igual que el delay(60) del código
+      vals.push('seg' + NAMES[i].toUpperCase() + '.write(' + (bit === '1' ? 'SI' : 'NO') + ');');
+      setSeg(i, bit === '1'); // los 7 a la vez, igual que en el código
     });
-    serial5.textContent = 'mostrar(' + vals.join(', ') + ');   // número ' + n;
+    serial5.textContent = '// número ' + n + ':  ' + vals.join(' ');
   }
   var autoId = 0;
   function stopAuto() { clearInterval(autoId); autoId = 0; autoBtn.textContent = 'Contar 0 → 9'; autoBtn.setAttribute('aria-pressed', 'false'); }
