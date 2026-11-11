@@ -1334,83 +1334,85 @@ td.b0 { color: var(--muted); text-align: center; }
       <div class="stage-h"><span class="lvl">Etapa 2 y 3</span><h3>Sensor de reversa completo</h3></div>
       <p class="prose">Agrega los LEDs y el buzzer. El programa mide, decide en qué zona está el obstáculo con <code>if / else if / else</code> y actúa.</p>
       <div class="code"><div class="code-bar"><span>sensor_reversa.ino</span><button class="copy" type="button" data-target="p3-c2">Copiar código</button></div>
-<pre id="p3-c2"><span class="c">// ===== Sensor de reversa =====</span>
-<span class="k">const int</span> TRIG = <span class="n">9</span>;
-<span class="k">const int</span> ECHO = <span class="n">10</span>;
-<span class="k">const int</span> LED_VERDE    = <span class="n">4</span>;
-<span class="k">const int</span> LED_AMARILLO = <span class="n">5</span>;
-<span class="k">const int</span> LED_ROJO     = <span class="n">6</span>;
-<span class="k">const int</span> BUZZER       = <span class="n">8</span>;
+<pre id="p3-c2" data-hl>// ===== Sensor de reversa =====
 
-<span class="k">void</span> setup() {
+// Pines del sensor ultrasónico
+const int TRIG = 9;
+const int ECHO = 10;
+
+// Pines de los LEDs y el buzzer
+const int LED_VERDE    = 4;
+const int LED_AMARILLO = 5;
+const int LED_ROJO     = 6;
+const int BUZZER       = 8;
+
+void setup() {
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT);
   pinMode(LED_VERDE, OUTPUT);
   pinMode(LED_AMARILLO, OUTPUT);
   pinMode(LED_ROJO, OUTPUT);
   pinMode(BUZZER, OUTPUT);
-  Serial.begin(<span class="n">9600</span>);
+  Serial.begin(9600);
 }
 
-<span class="c">// Función que mide y regresa la distancia en cm</span>
-<span class="k">long</span> medirDistancia() {
+void loop() {
+  // 1. El sensor manda un sonido
   digitalWrite(TRIG, LOW);
-  delayMicroseconds(<span class="n">2</span>);
+  delayMicroseconds(2);
   digitalWrite(TRIG, HIGH);
-  delayMicroseconds(<span class="n">10</span>);
+  delayMicroseconds(10);
   digitalWrite(TRIG, LOW);
 
-  <span class="k">long</span> tiempo = pulseIn(ECHO, HIGH, <span class="n">30000</span>); <span class="c">// espera máx. 30 ms</span>
-  <span class="k">if</span> (tiempo == <span class="n">0</span>) {
-    <span class="k">return</span> <span class="n">999</span>;           <span class="c">// no regresó eco: no hay obstáculo cerca</span>
-  }
-  <span class="k">return</span> tiempo / <span class="n">58</span>;
-}
+  // 2. Medimos cuánto tarda en regresar el eco
+  long tiempo = pulseIn(ECHO, HIGH, 30000);
 
-<span class="c">// Apaga los tres LEDs</span>
-<span class="k">void</span> apagarLeds() {
+  // 3. Convertimos el tiempo a centímetros
+  long distancia = tiempo / 58;
+
+  // Si el eco no regresó, no hay nada cerca
+  if (tiempo == 0) {
+    distancia = 999;
+  }
+
+  // 4. Mostramos la distancia en el monitor serie
+  Serial.print("Distancia: ");
+  Serial.print(distancia);
+  Serial.println(" cm");
+
+  // 5. Apagamos todo antes de decidir
   digitalWrite(LED_VERDE, LOW);
   digitalWrite(LED_AMARILLO, LOW);
   digitalWrite(LED_ROJO, LOW);
-}
-
-<span class="c">// Un pitido: suena "duracion" ms y calla "pausa" ms</span>
-<span class="k">void</span> pitido(<span class="k">int</span> duracion, <span class="k">int</span> pausa) {
-  digitalWrite(BUZZER, HIGH);
-  delay(duracion);
   digitalWrite(BUZZER, LOW);
-  delay(pausa);
-}
 
-<span class="k">void</span> loop() {
-  <span class="k">long</span> distancia = medirDistancia();
-  Serial.print(<span class="n">"Distancia: "</span>);
-  Serial.print(distancia);
-  Serial.println(<span class="n">" cm"</span>);
-
-  apagarLeds();
-
-  <span class="k">if</span> (distancia > <span class="n">50</span>) {
-    <span class="c">// Zona segura: verde, sin sonido</span>
+  // 6. Decidimos qué hacer según la distancia
+  if (distancia &gt; 50) {
+    // Lejos: verde, sin sonido
     digitalWrite(LED_VERDE, HIGH);
+    delay(100);
+  }
+  else if (distancia &gt; 30) {
+    // Precaución: verde y pitido lento
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(BUZZER, HIGH);
+    delay(80);
     digitalWrite(BUZZER, LOW);
-    delay(<span class="n">100</span>);
+    delay(500);
   }
-  <span class="k">else if</span> (distancia > <span class="n">30</span>) {
-    <span class="c">// Precaución: verde + pitido lento</span>
-    digitalWrite(LED_VERDE, HIGH);
-    pitido(<span class="n">80</span>, <span class="n">500</span>);
-  }
-  <span class="k">else if</span> (distancia > <span class="n">15</span>) {
-    <span class="c">// Cerca: amarillo + pitido rápido</span>
+  else if (distancia &gt; 15) {
+    // Cerca: amarillo y pitido rápido
     digitalWrite(LED_AMARILLO, HIGH);
-    pitido(<span class="n">80</span>, <span class="n">150</span>);
+    digitalWrite(BUZZER, HIGH);
+    delay(80);
+    digitalWrite(BUZZER, LOW);
+    delay(150);
   }
-  <span class="k">else</span> {
-    <span class="c">// ¡Alto!: rojo + tono continuo</span>
+  else {
+    // ¡Alto!: rojo y sonido continuo
     digitalWrite(LED_ROJO, HIGH);
     digitalWrite(BUZZER, HIGH);
-    delay(<span class="n">100</span>);
+    delay(100);
   }
 }</pre></div>
       <div class="note"><strong>Si tu buzzer es pasivo</strong> (solo hace «clic» con <code>digitalWrite</code>): cambia <code>digitalWrite(BUZZER, HIGH)</code> por <code>tone(BUZZER, 1500)</code> y <code>digitalWrite(BUZZER, LOW)</code> por <code>noTone(BUZZER)</code>.</div>
@@ -1422,7 +1424,7 @@ td.b0 { color: var(--muted); text-align: center; }
           <li><code>Serial.begin()</code> y <code>Serial.println()</code>: Arduino «habla» con la computadora. Sirve para ver qué está midiendo.</li>
           <li><code>pulseIn()</code>: mide cuánto tiempo un pin permanece en <code>HIGH</code>, en microsegundos.</li>
           <li><code>if / else if / else</code>: el programa toma decisiones según la distancia. Se revisan en orden y solo se ejecuta el primero que se cumple.</li>
-          <li><strong>Funciones propias</strong> (<code>medirDistancia()</code>, <code>pitido()</code>): agrupan instrucciones con un nombre para reutilizarlas y que el <code>loop()</code> se lea fácil.</li>
+          <li><strong>El caso 999:</strong> si el eco no regresa (no hay nada enfrente), <code>pulseIn()</code> da 0. Entonces ponemos <code>distancia = 999</code> para que el programa lo trate como «muy lejos» y prenda el verde.</li>
         </ul>
       </div>
       <div class="prose">
@@ -1455,7 +1457,7 @@ td.b0 { color: var(--muted); text-align: center; }
       <div class="ch"><span class="lvl">Fácil</span><p>Cambia las distancias de las zonas a 100, 60 y 25 cm, como en una camioneta grande.</p></div>
       <div class="ch"><span class="lvl">Fácil</span><p>Haz que en la zona roja el LED también parpadee además del tono.</p></div>
       <div class="ch"><span class="lvl">Medio</span><p>Agrega una cuarta zona (5 a 15 cm) con un LED azul o un segundo LED rojo.</p></div>
-      <div class="ch"><span class="lvl">Medio</span><p>Que la pausa entre pitidos se calcule con la distancia: <code>pitido(80, distancia * 8)</code>. Así el ritmo cambia de forma continua, como en un carro real.</p></div>
+      <div class="ch"><span class="lvl">Medio</span><p>Que la pausa entre pitidos dependa de la distancia: en la zona de precaución cambia <code>delay(500)</code> por <code>delay(distancia * 8)</code>. Así el ritmo cambia poco a poco, como en un carro real.</p></div>
       <div class="ch"><span class="lvl">Reto</span><p>Agrega un botón de «marcha atrás»: el sensor solo funciona mientras el botón esté presionado, igual que en el carro cuando metes reversa.</p></div>
     </div>
     <h3 style="margin-top:32px">Preguntas para cerrar</h3>
@@ -1473,7 +1475,7 @@ td.b0 { color: var(--muted); text-align: center; }
       <div class="tl"><span class="t">0:00 – 0:15</span><p>Pregunta detonadora: ¿cómo sabe el carro que está cerca de la pared? Mostrar el simulador y explicar el ultrasonido con el ejemplo del murciélago.</p></div>
       <div class="tl"><span class="t">0:15 – 0:45</span><p>Etapa 1: conectar solo el sensor, subir el código de medición y comprobar con regla a 10, 20 y 30 cm. Primer uso del Monitor Serie.</p></div>
       <div class="tl"><span class="t">0:45 – 1:15</span><p>Etapa 2: los LEDs del semáforo se quedan en los pines 4, 5 y 6. Explicar <code>if / else if / else</code> y el orden de las condiciones.</p></div>
-      <div class="tl"><span class="t">1:15 – 1:40</span><p>Etapa 3: agregar el buzzer y la función <code>pitido()</code>. Probar las cuatro zonas con un cuaderno.</p></div>
+      <div class="tl"><span class="t">1:15 – 1:40</span><p>Etapa 3: agregar el buzzer. Cada pitido es prender, esperar, apagar y esperar. Probar las cuatro zonas con un cuaderno.</p></div>
       <div class="tl"><span class="t">1:40 – 2:00</span><p>Retos fáciles para quien termine, preguntas de cierre y evidencia: video corto del circuito pasando por las cuatro zonas.</p></div>
     </div>
     <div class="note tip" style="margin-top:18px">Si es la primera vez que arman circuitos físicos, deja que los equipos que terminen la etapa 1 ayuden a los que no. Si alguien se atora en el armado, puede probar primero el mismo circuito en un simulador como TinkerCAD.</div>
@@ -1740,7 +1742,7 @@ void loop() {
 
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 3</span><h3>Pluma de estacionamiento completa</h3></div>
-      <p class="prose">Ahora juntamos todo. Partimos del código del sensor de reversa: las mismas constantes, el mismo <code>setup()</code> y la misma función <code>medirDistancia()</code>. Lo que cambia es dónde va el sensor y el <code>loop()</code>: si un carro pasa frente al sensor (a menos de 15 cm), se hace toda la secuencia de la pluma.</p>
+      <p class="prose">Ahora juntamos todo. Partimos del código del sensor de reversa: las mismas constantes, el mismo <code>setup()</code> y las mismas líneas para medir la distancia. Lo que cambia es dónde va el sensor y el <code>loop()</code>: si un carro pasa frente al sensor (a menos de 15 cm), se hace toda la secuencia de la pluma.</p>
       <div class="code"><div class="code-bar"><span>pluma_estacionamiento.ino</span><button class="copy" type="button" data-target="p5-c3">Copiar código</button></div>
 <pre id="p5-c3" data-hl>// ===== Pluma de estacionamiento =====
 #include &lt;Servo.h&gt;
@@ -1771,8 +1773,8 @@ void setup() {
   digitalWrite(LED_ROJO, HIGH);    // y el semáforo en rojo
 }
 
-// La misma función de la práctica 4: mide y regresa la distancia en cm
-long medirDistancia() {
+void loop() {
+  // Medimos la distancia, igual que en la práctica 4
   digitalWrite(TRIG, LOW);
   delayMicroseconds(2);
   digitalWrite(TRIG, HIGH);
@@ -1780,14 +1782,13 @@ long medirDistancia() {
   digitalWrite(TRIG, LOW);
 
   long tiempo = pulseIn(ECHO, HIGH, 30000);
-  if (tiempo == 0) {
-    return 999;           // no regresó eco: no hay nada enfrente
-  }
-  return tiempo / 58;
-}
+  long distancia = tiempo / 58;
 
-void loop() {
-  long distancia = medirDistancia();
+  // Si el eco no regresó, no hay nada enfrente
+  if (tiempo == 0) {
+    distancia = 999;
+  }
+
   Serial.print("Distancia: ");
   Serial.print(distancia);
   Serial.println(" cm");
@@ -2352,7 +2353,7 @@ void loop() {
           <li><code>Servo segA;</code> crea un servo llamado <code>segA</code>. Hicimos siete, uno por segmento.</li>
           <li><code>attach(2)</code> le dice al servo en qué pin está su cable de señal.</li>
           <li><code>write(90)</code> lo mueve a 90 grados.</li>
-          <li>Una <strong>función que recibe 7 valores</strong>. Es igual que <code>pitido(duracion, pausa)</code> de la práctica 4, pero con siete datos en lugar de dos.</li>
+          <li>Una <strong>función</strong> que recibe 7 valores: escribimos una sola vez cómo se mueven los 7 servos y después solo le pasamos los datos de cada número.</li>
         </ul>
       </div>
       <div class="prose">
