@@ -1508,7 +1508,7 @@ void loop() {
 
   <section class="block" id="p5-sim"><div class="wrap">
     <div class="sec-head"><span class="sec-num">01</span><h2>Así debe funcionar</h2></div>
-    <div class="prose"><p>Mueve el control para que el carro avance. El sensor está <strong>de costado</strong>, mirando hacia el carril: cuando el carro pasa frente a él, mide menos de 15 cm. Entonces se prende el <strong>amarillo 1 segundo</strong>, después el <strong>verde</strong> y la pluma sube. A los 3 segundos vuelve el <strong>rojo</strong> y la pluma baja. Mientras pasa todo eso, el Arduino <strong>no está midiendo</strong>, porque está esperando en los <code>delay()</code>.</p></div>
+    <div class="prose"><p>Mueve el control para que el carro avance. El sensor está <strong>de costado</strong>, mirando hacia el carril: cuando el carro pasa frente a él, mide 10 cm o menos. Entonces se prende el <strong>amarillo 1 segundo</strong>, después el <strong>verde</strong> y la pluma sube. A los 3 segundos vuelve el <strong>rojo</strong> y la pluma baja. Mientras pasa todo eso, el Arduino <strong>no está midiendo</strong>, porque está esperando en los <code>delay()</code>.</p></div>
     <div class="sim">
       <div class="sim-top"><h3>Simulador de la pluma</h3></div>
       <div class="scene">
@@ -1680,7 +1680,7 @@ void loop() {
       <li>Pega un palito de paleta al brazo con cinta o silicón. Si quieres, píntale franjas rojas y blancas.</li>
       <li>Pega el servo con cinta doble cara a una cajita o a la orilla de la mesa, de modo que el palito quede <strong>horizontal</strong>, como una pluma cerrada.</li>
       <li>Coloca el sensor <strong>de costado</strong>: a la orilla del carril, un poco antes de la pluma, con los «ojos» mirando hacia el carril (no hacia donde vienen los carros). Ponlo a la altura de tu carro de juguete o de tu caja.</li>
-      <li>Del otro lado del carril no debe haber nada a menos de 15 cm. Si hay una pared o una caja muy cerca, el sensor creerá que siempre hay un carro.</li>
+      <li>Del otro lado del carril no debe haber nada a menos de 10 cm. Si hay una pared o una caja muy cerca, el sensor creerá que siempre hay un carro.</li>
       <li>Con la etapa 2 del código ajusta el brazo: en <code>ABAJO</code> el palito debe quedar horizontal. Si queda chueco, quita el brazo y ponlo un diente antes o después.</li>
     </ol>
     <div class="note tip" style="margin-top:20px"><strong>Un servo con un palito ligero sí funciona conectado al 5V del Arduino.</strong> Si el Arduino se reinicia cada vez que la pluma se mueve, el palito es muy pesado o está rozando con algo.</div>
@@ -1741,24 +1741,25 @@ void loop() {
 
     <div class="stage">
       <div class="stage-h"><span class="lvl">Etapa 3</span><h3>Pluma de estacionamiento completa</h3></div>
-      <p class="prose">Ahora juntamos todo. Partimos del código del sensor de reversa: las mismas constantes, el mismo <code>setup()</code> y las mismas líneas para medir la distancia. Lo que cambia es dónde va el sensor y el <code>loop()</code>: si un carro pasa frente al sensor (a menos de 15 cm), se hace toda la secuencia de la pluma.</p>
+      <p class="prose">Ahora juntamos todo. Partimos del código del sensor de reversa de la práctica 4 y le agregamos el servo: las mismas constantes y las mismas líneas para medir la distancia. Lo que cambia es dónde va el sensor y la decisión del final: si no hay carro, rojo; si un carro pasa frente al sensor (a 10 cm o menos), se hace toda la secuencia de la pluma.</p>
       <div class="code"><div class="code-bar"><span>pluma_estacionamiento.ino</span><button class="copy" type="button" data-target="p5-c3">Copiar código</button></div>
 <pre id="p5-c3" data-hl>// ===== Pluma de estacionamiento =====
-#include &lt;Servo.h&gt;
+#include &lt;Servo.h&gt;     // librería para servos (ya viene con el IDE)
 
-const int TRIG = 9;       // sensor de costado, mirando hacia el carril
+Servo miServo;
+
+// Pines del sensor ultrasónico (de costado, mirando hacia el carril)
+const int TRIG = 9;
 const int ECHO = 10;
+
+// Pines de los LEDs y el buzzer
 const int LED_VERDE    = 4;
 const int LED_AMARILLO = 5;
 const int LED_ROJO     = 6;
 const int BUZZER       = 8;
 
-const int ABAJO  = 0;    // pluma cerrada
-const int ARRIBA = 90;   // pluma abierta
-
-Servo pluma;
-
 void setup() {
+  miServo.attach(2);     // la señal del servo va al pin 2
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT);
   pinMode(LED_VERDE, OUTPUT);
@@ -1766,54 +1767,65 @@ void setup() {
   pinMode(LED_ROJO, OUTPUT);
   pinMode(BUZZER, OUTPUT);
   Serial.begin(9600);
-
-  pluma.attach(2);
-  pluma.write(ABAJO);              // al encender, la pluma empieza cerrada
-  digitalWrite(LED_ROJO, HIGH);    // y el semáforo en rojo
 }
 
 void loop() {
-  // Medimos la distancia, igual que en la práctica 4
+  miServo.write(0);      // la pluma abajo (0 grados)
+
+  // 1. El sensor manda un sonido
   digitalWrite(TRIG, LOW);
   delayMicroseconds(2);
   digitalWrite(TRIG, HIGH);
   delayMicroseconds(10);
   digitalWrite(TRIG, LOW);
 
+  // 2. Medimos cuánto tarda en regresar el eco
   long tiempo = pulseIn(ECHO, HIGH, 30000);
+
+  // 3. Convertimos el tiempo a centímetros
   long distancia = tiempo / 58;
 
-  // Si el eco no regresó, no hay nada enfrente
+  // Si el eco no regresó, no hay nada cerca
   if (tiempo == 0) {
     distancia = 999;
   }
 
+  // 4. Mostramos la distancia en el monitor serie
   Serial.print("Distancia: ");
   Serial.print(distancia);
   Serial.println(" cm");
 
-  if (distancia &lt; 15) {   // hay un carro frente al sensor
-    // 1. Llegó un carro: amarillo durante 1 segundo
+  // 5. Apagamos verde y amarillo, y prendemos el rojo
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_AMARILLO, LOW);
+  digitalWrite(LED_ROJO, HIGH);
+  digitalWrite(BUZZER, LOW);
+
+  // 6. Decidimos qué hacer según la distancia
+  if (distancia &gt; 10) {
+    // No hay carro: se queda en rojo con la pluma abajo
+    digitalWrite(LED_ROJO, HIGH);
+    delay(100);
+  }
+  else {
+    // Llegó un carro: amarillo 1 segundo
     digitalWrite(LED_ROJO, LOW);
     digitalWrite(LED_AMARILLO, HIGH);
     delay(1000);
     digitalWrite(LED_AMARILLO, LOW);
 
-    // 2. Verde y la pluma sube de 0 a 90 grados
+    // Verde y la pluma sube a 90 grados: 3 segundos para pasar
     digitalWrite(LED_VERDE, HIGH);
-    pluma.write(ARRIBA);
-    delay(3000);                   // el carro tiene 3 segundos para pasar
+    miServo.write(90);
+    delay(3000);
 
-    // 3. Rojo y la pluma baja
+    // Se apaga el verde y la pluma baja.
+    // El loop() vuelve a empezar y en el paso 5 se prende el rojo.
     digitalWrite(LED_VERDE, LOW);
-    digitalWrite(LED_ROJO, HIGH);
-    pluma.write(ABAJO);
-    delay(1000);                   // tiempo para que la pluma termine de bajar
+    miServo.write(0);
   }
-
-  delay(100);
 }</pre></div>
-      <div class="note"><strong>Mientras no haya carro</strong>, el <code>if</code> no se cumple y no cambia nada: el rojo sigue encendido y la pluma sigue abajo. Cuando el sensor ve un carro a menos de 15 cm, empieza la secuencia: amarillo 1 segundo, verde con la pluma arriba 3 segundos, y de nuevo rojo con la pluma abajo.</div>
+      <div class="note"><strong>Mientras no haya carro</strong>, la distancia es mayor que 10 y se cumple el <code>if</code>: rojo y pluma abajo. Cuando el sensor ve un carro a 10 cm o menos, entra al <code>else</code>: amarillo 1 segundo, verde con la pluma arriba 3 segundos y la pluma baja. El <code>loop()</code> vuelve a empezar y el rojo se prende de inmediato.</div>
     </div>
 
     <div class="two">
@@ -1821,15 +1833,15 @@ void loop() {
         <h3>Lo nuevo en esta práctica</h3>
         <ul class="list">
           <li><code>#include &lt;Servo.h&gt;</code> agrega la <strong>librería</strong> de servos: código que ya viene con el Arduino IDE.</li>
-          <li><code>Servo pluma;</code> crea un servo llamado <code>pluma</code>.</li>
-          <li><code>pluma.attach(2)</code> le dice en qué pin está su cable de señal.</li>
-          <li><code>pluma.write(90)</code> lo mueve a 90 grados y ahí se queda.</li>
-          <li><code>const int ARRIBA = 90;</code> le pone nombre a un ángulo, igual que hicimos con los pines.</li>
+          <li><code>Servo miServo;</code> crea un servo llamado <code>miServo</code>.</li>
+          <li><code>miServo.attach(2)</code> le dice en qué pin está su cable de señal.</li>
+          <li><code>miServo.write(90)</code> lo mueve a 90 grados y ahí se queda.</li>
+          <li>En la etapa 2, <code>const int ARRIBA = 90;</code> le pone nombre a un ángulo, igual que hicimos con los pines.</li>
         </ul>
       </div>
       <div class="prose">
-        <h3>¿Por qué no hay <code>else</code>?</h3>
-        <p>Si no hay carro, no hay nada que cambiar: la pluma ya está abajo y el rojo ya está encendido desde el <code>setup()</code> o desde el final de la última secuencia. Por eso solo usamos <code>if</code>.</p>
+        <h3>¿Por qué <code>miServo.write(0)</code> está al inicio del <code>loop()</code>?</h3>
+        <p>Porque así, en cada vuelta, lo primero es asegurar que la pluma esté abajo. Después de que pasa el carro, el <code>loop()</code> vuelve a empezar: la pluma baja y en el paso 5 se prende el rojo. Por eso el rojo aparece justo cuando la pluma baja.</p>
         <p>Y mientras la pluma está arriba, el Arduino está «dormido» en los <code>delay()</code>: no mide nada hasta que termina la secuencia y el <code>loop()</code> vuelve a empezar.</p>
       </div>
     </div>
@@ -1844,11 +1856,11 @@ void loop() {
         <tr><td>El servo no se mueve</td><td>Cable de señal en otro pin o servo mal conectado</td><td>Naranja al pin 2, rojo a 5V, café a GND. Revisa que diga <code>attach(2)</code>.</td></tr>
         <tr><td>El Arduino se reinicia cuando la pluma se mueve</td><td>El servo pide demasiada corriente</td><td>Usa un palito ligero y revisa que no roce con nada.</td></tr>
         <tr><td>Un servo gira sin parar</td><td>Es de rotación continua (360°)</td><td>Pide al docente uno de 180°.</td></tr>
-        <tr><td>La pluma sube hacia el lado equivocado</td><td>El servo está volteado</td><td>Cambia a <code>ABAJO = 180</code> y <code>ARRIBA = 90</code>, o voltea el servo.</td></tr>
+        <tr><td>La pluma sube hacia el lado equivocado</td><td>El servo está volteado</td><td>Voltea el servo, o cambia los <code>write(0)</code> por <code>write(180)</code>.</td></tr>
         <tr><td>La pluma no queda horizontal</td><td>Brazo mal colocado</td><td>Sube la etapa 2, quita el brazo y ponlo un diente antes o después.</td></tr>
-        <tr><td>Zumba cuando está abajo</td><td>Choca con su tope</td><td>Usa <code>ABAJO = 5</code> en lugar de 0.</td></tr>
+        <tr><td>Zumba cuando está abajo</td><td>Choca con su tope</td><td>Usa <code>write(5)</code> en lugar de <code>write(0)</code>.</td></tr>
         <tr><td>La pluma se abre sola</td><td>Algo está frente al sensor</td><td>Revisa en el Monitor Serie qué distancia marca y quita lo que estorbe.</td></tr>
-        <tr><td>La pluma sube y baja sin parar, aunque no haya carro</td><td>El otro lado del carril está muy cerca</td><td>Sin carro, el Monitor Serie debe marcar más de 15 cm. Aleja la pared o la caja de enfrente, o gira un poco el sensor.</td></tr>
+        <tr><td>La pluma sube y baja sin parar, aunque no haya carro</td><td>El otro lado del carril está muy cerca</td><td>Sin carro, el Monitor Serie debe marcar más de 10 cm. Aleja la pared o la caja de enfrente, o gira un poco el sensor.</td></tr>
         <tr><td>El carro pasa y no lo detecta</td><td>El sensor no apunta al carro</td><td>Revisa que el sensor esté de costado, a la altura del carro y mirando hacia el carril.</td></tr>
         <tr><td>Nunca se abre</td><td>El sensor no mide</td><td>Revisa la práctica 4: Trig al pin 9 y Echo al 10. En el Monitor Serie debe cambiar la distancia.</td></tr>
       </tbody>
@@ -1859,10 +1871,10 @@ void loop() {
     <div class="sec-head"><span class="sec-num">06</span><h2>Retos</h2></div>
     <div class="challenges">
       <div class="ch"><span class="lvl">Fácil</span><p>Dale más tiempo al carro: que el verde dure 5 segundos.</p></div>
-      <div class="ch"><span class="lvl">Fácil</span><p>Que la pluma se abra cuando el carro esté a menos de 10 cm en lugar de 15.</p></div>
+      <div class="ch"><span class="lvl">Fácil</span><p>Que la pluma se abra cuando el carro esté a 15 cm o menos, en lugar de 10.</p></div>
       <div class="ch"><span class="lvl">Medio</span><p>Que la pluma suba por pasos: <code>write(30)</code>, <code>write(60)</code> y <code>write(90)</code> con una pausa corta entre cada uno, como las plumas reales que suben despacio.</p></div>
       <div class="ch"><span class="lvl">Medio</span><p>Con buzzer pasivo: un tono agudo al abrir (2000 Hz) y uno grave al cerrar (500 Hz).</p></div>
-      <div class="ch"><span class="lvl">Reto</span><p>¡Que no le caiga la pluma al carro! Antes de bajarla, mide otra vez. Si todavía hay algo a menos de 15 cm, espera 2 segundos más antes de cerrar.</p></div>
+      <div class="ch"><span class="lvl">Reto</span><p>¡Que no le caiga la pluma al carro! Antes de bajarla, mide otra vez. Si todavía hay algo a 10 cm o menos, espera 2 segundos más antes de cerrar.</p></div>
     </div>
     <h3 style="margin-top:32px">Preguntas para cerrar</h3>
     <ol class="qs">
@@ -2991,8 +3003,7 @@ void loop() {
     var STEPS = [
       ['1. Llegó un carro: amarillo 1 segundo', 'var(--led-y)', '1 s'],
       ['2. Verde y la pluma sube a 90°: el carro puede pasar', 'var(--led-g)', '3 s'],
-      ['3. Rojo y la pluma baja a 0°', 'var(--led-r)', '1 s'],
-      ['4. Rojo: pluma cerrada, el Arduino mide', 'var(--led-r)', 'cada 0.1 s']
+      ['3. Sin carro: rojo, pluma abajo y el Arduino mide', 'var(--led-r)', 'cada 0.1 s']
     ];
     var rows = STEPS.map(function (st) {
       var row = document.createElement('div'); row.className = 'seq-row';
@@ -3004,14 +3015,13 @@ void loop() {
     function lamp(c) { ['r', 'y', 'g'].forEach(function (k) { L[k].classList.toggle('on', k === c); }); }
     function armUp(up) { open = up; arm.style.transform = up ? 'rotate(-90deg)' : 'rotate(0deg)'; }
     function at(t, f) { timers.push(setTimeout(f, t)); }
-    function idle() { busy = false; timers = []; mark(3); lamp('r'); armUp(false); stateOut.textContent = 'Pluma cerrada'; }
+    function idle() { busy = false; timers = []; mark(2); lamp('r'); armUp(false); stateOut.textContent = 'Pluma cerrada'; }
     function start() {
       busy = true;
       serial.textContent = 'Secuencia en marcha: el Arduino no mide hasta que termine';
       mark(0); lamp('y'); stateOut.textContent = 'Carro detectado';
       at(1000, function () { mark(1); lamp('g'); armUp(true); stateOut.textContent = 'Puede pasar'; });
-      at(4000, function () { mark(2); lamp('r'); armUp(false); stateOut.textContent = 'Cerrando'; });
-      at(5000, function () { idle(); render(); });   // el loop() vuelve a empezar y mide otra vez
+      at(4000, function () { idle(); render(); });   // la pluma baja, el loop() vuelve a empezar y prende el rojo   // el loop() vuelve a empezar y mide otra vez
     }
     // Lo que mediría el sensor: 8 cm si el carro está frente a él; si no, el otro lado del carril (28 cm)
     function medir() { return (front - 110 <= SENSOR_X && SENSOR_X <= front) ? 8 : 28; }
@@ -3028,7 +3038,7 @@ void loop() {
       distOut.textContent = d + ' cm';
       if (busy) return;
       serial.textContent = 'Distancia: ' + d + ' cm';
-      if (d < 15) start();
+      if (d <= 10) start();
     }
     range.addEventListener('input', render);
     stoppers.push(function () {
